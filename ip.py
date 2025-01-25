@@ -155,6 +155,9 @@ class IP:
         return matrixBinary
 
     def get_next_network(self, cidr):
+        """
+        Il n'est pas possible de générer un réseau suivant qui ne fait pas partie de la même class
+        """
 
         def To256(octet_l):
             if nextNetwork[octet_l] + 1 < 256:
@@ -186,7 +189,10 @@ class IP:
                             nextNetwork[octet] += magic_table[key]
                         else:
                             To256(octet-1)
-                        return IP(self.convertToString(nextNetwork), cidr)
+                        nextNetworkBuilded = IP(self.convertToString(nextNetwork), cidr)
+                        if nextNetworkBuilded.class_ != self.class_:
+                            raise ValueError("ValueError: The next network belongs to a different class")
+                        return nextNetworkBuilded
 
     def convertToString(self, vector):
         return ".".join(str(octet) for octet in vector)
