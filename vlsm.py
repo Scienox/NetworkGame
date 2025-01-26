@@ -1,10 +1,11 @@
 from ip import IP
+from helpfunction import hostsRequiermentNumber
 
 
 class VLSM:
     def __init__(self, network, cidr, hosts:"name1:n1,name2:n2,name+1:n+1"): # type: ignore
-        necessaryHost = sum([int(numberOfHosts.split(":")[1]) for numberOfHosts in hosts.split(",")])
-        self.subdividedNetwork = IP(network, cidr)
+        necessaryHost = sum([hostsRequiermentNumber(int(numberOfHosts.split(":")[1])) for numberOfHosts in hosts.split(",")])
+        self.subdividedNetwork = IP(network, cidr, "VLSM")
         if self.subdividedNetwork.totalHost < necessaryHost:
             raise ValueError(f"Your subdivised network is too short. {necessaryHost} minimum. Only {self.subdividedNetwork.totalHost} hosts are avaible.")
         self.hosts = [(numberOfHosts.split(":")[0], int(numberOfHosts.split(":")[1])) for numberOfHosts in hosts.split(",")]
@@ -17,6 +18,8 @@ class VLSM:
         tmpIP = IP("0.0.0.0", cidrTarget)
         if tmpIP.totalHost >= numberOfHosts:
             return cidrTarget
+        elif cidrTarget < 1:
+            raise ValueError("Hosts possible exceded")
         else:
             return self.selectMask(numberOfHosts, cidrTarget-1)
 

@@ -1,5 +1,7 @@
 class IP:
     def __init__(self, ipHost, cidr, name=""):
+        if 30 < cidr or cidr < 1:
+            raise ValueError("It's not a valid CIDR")
         self.octetBinary = [128, 64, 32, 16, 8, 4, 2, 1]
         self.cidr_ = cidr
         self.totalHost_ = (2**(32 - self.cidr)) - 2
