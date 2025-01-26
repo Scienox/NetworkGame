@@ -7,7 +7,7 @@ class VLSM:
         necessaryHost = sum([hostsRequiermentNumber(int(numberOfHosts.split(":")[1])) for numberOfHosts in hosts.split(",")])
         self.subdividedNetwork = IP(network, cidr, "VLSM")
         if self.subdividedNetwork.totalHost < necessaryHost:
-            raise ValueError(f"Your subdivised network is too short. {necessaryHost} minimum. Only {self.subdividedNetwork.totalHost} hosts are avaible.")
+            raise ValueError(f"Your subdivised network is too short. {hostsRequiermentNumber(necessaryHost)} minimum. Only {self.subdividedNetwork.totalHost} hosts are avaible.")
         self.hosts = [(numberOfHosts.split(":")[0], int(numberOfHosts.split(":")[1])) for numberOfHosts in hosts.split(",")]
         self.hosts = list(reversed(sorted(self.hosts, key=lambda x: x[1])))
         
