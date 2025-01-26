@@ -6,14 +6,14 @@ class VLSM:
         necessaryHost = sum([int(numberOfHosts.split(":")[1]) for numberOfHosts in hosts.split(",")])
         self.subdividedNetwork = IP(network, cidr)
         if self.subdividedNetwork.totalHost < necessaryHost:
-            raise ValueError(f"ValueError: your subdivised network is too short. {necessaryHost} minimum. Only {self.subdividedNetwork.totalHost} hosts are avaible.")
+            raise ValueError(f"Your subdivised network is too short. {necessaryHost} minimum. Only {self.subdividedNetwork.totalHost} hosts are avaible.")
         self.hosts = [(numberOfHosts.split(":")[0], int(numberOfHosts.split(":")[1])) for numberOfHosts in hosts.split(",")]
         self.hosts = list(reversed(sorted(self.hosts, key=lambda x: x[1])))
         
         self.subNetworks = []
         self.generate_sub_network()
 
-    def selectMask(self, numberOfHosts, cidrTarget=30) -> "cidr":
+    def selectMask(self, numberOfHosts, cidrTarget=30) -> "cidr": # type: ignore
         tmpIP = IP("0.0.0.0", cidrTarget)
         if tmpIP.totalHost >= numberOfHosts:
             return cidrTarget
@@ -25,7 +25,8 @@ class VLSM:
 
         for host in range(len(self.hosts)):
             newCIDR = self.selectMask(self.hosts[host][1])
-            subNetwork = IP(networkTarget.network, newCIDR)
+            name = self.hosts[host][0]
+            subNetwork = IP(networkTarget.network, newCIDR, name)
 
             if host < len(self.hosts) - 1:
                 nextCIDR = self.selectMask(self.hosts[host+1][1])

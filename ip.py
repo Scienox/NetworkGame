@@ -1,8 +1,9 @@
 class IP:
-    def __init__(self, ipHost, cidr):
+    def __init__(self, ipHost, cidr, name=""):
         self.octetBinary = [128, 64, 32, 16, 8, 4, 2, 1]
         self.cidr_ = cidr
         self.totalHost_ = (2**(32 - self.cidr)) - 2
+        self.name_ = name
 
         self.ipHost_ = [int(octet) for octet in ipHost.split(".")]
         self.ipHostBinary = self.convertToBinary(self.ipHost_)
@@ -24,6 +25,7 @@ class IP:
 
     def __str__(self):
         infos = [
+            f"Network Name: {self.name}\n",
             f"Type: {self.type}\n",
             f"Class: {self.classIP}\n",
             f"Reservation: {self.reservation}\n"
@@ -52,6 +54,10 @@ class IP:
     @property
     def ipHost(self):
         return self.convertToString(self.ipHost_)
+    
+    @property
+    def name(self):
+        return self.name_
 
     @property
     def subMask(self):
@@ -191,7 +197,9 @@ class IP:
                             To256(octet-1)
                         nextNetworkBuilded = IP(self.convertToString(nextNetwork), cidr)
                         if nextNetworkBuilded.class_ != self.class_:
-                            raise ValueError("ValueError: The next network belongs to a different class")
+                            raise ValueError("The next network belongs to a different class")
+                        elif nextNetworkBuilded.reservation != self.reservation:
+                            raise ValueError("The next network belongs to a different reservation")
                         return nextNetworkBuilded
 
     def convertToString(self, vector):
