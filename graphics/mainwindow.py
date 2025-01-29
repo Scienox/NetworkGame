@@ -24,18 +24,23 @@ class MainWindow(QMainWindow):
         self.layoutWidgetIp = QHBoxLayout(self.widgetIp)
         self.widgetIp.setLayout(self.layoutWidgetIp)
         left = QWidget(parent=self.widgetIp)
-        layoutleft = QVBoxLayout(left)
-        left.setLayout(layoutleft)
-        self.layoutWidgetIp.addStretch(1)
+        right = QWidget(parent=self.widgetIp)
+        layoutLeft = QVBoxLayout(left)
+        layoutRight = QVBoxLayout(right)
+        left.setLayout(layoutLeft)
+        right.setLayout(layoutRight)
         self.layoutWidgetIp.addWidget(left)
-        #self.layoutWidgetIp.addStretch(1)
+        self.layoutWidgetIp.addWidget(right)
 
         self.pushButtonIp = QPushButton(parent=left, text="Generate")
         self.lineEditIp = QLineEdit(parent=left)
-        layoutleft.addStretch(1)
-        layoutleft.addWidget(self.lineEditIp)
-        layoutleft.addWidget(self.pushButtonIp)
-        #layoutleft.addStretch(1)
+        layoutLeft.addWidget(self.lineEditIp)
+        layoutLeft.addWidget(self.pushButtonIp)
+        layoutLeft.addStretch(1)
+
+        self.lineEditCidr = QLineEdit(parent=right)
+        layoutRight.addWidget(self.lineEditCidr)
+        layoutRight.addStretch(1)
 
     def __menuBar(self):
         pass
