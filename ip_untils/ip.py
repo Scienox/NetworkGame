@@ -9,6 +9,8 @@ class IP:
 
         self.ipHost_ = [int(octet) for octet in ipHost.split(".")]
         self.ipHostBinary = self.convertToBinary(self.ipHost_)
+        if len(self.ipHost_) != 4:
+            raise ValueError("Ip is composed of 4 Bytes and 32 bits ex:192.168.0.0")
         self.maskBinary = self.buildSubMask()
         self.subMask_ = self.convertToDecimal(self.maskBinary)
         self.networkBinary = self.buildNetwork()

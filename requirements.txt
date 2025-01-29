@@ -1,0 +1,6 @@
+click==8.1.8
+PySide6==6.8.1.1
+PySide6_Addons==6.8.1.1
+PySide6_Essentials==6.8.1.1
+qt6-applications==6.5.0.2.3
+shiboken6==6.8.1.1

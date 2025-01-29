@@ -1,4 +1,4 @@
-from ip import IP
+from ip_untils.ip import IP
 
 
 class Subnet:

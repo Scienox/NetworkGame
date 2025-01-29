@@ -1,5 +1,6 @@
-from ip import IP
-from helpfunction import hostsRequiermentNumber
+from ip_untils.ip import IP
+
+from ip_untils.helpfunction import hostsRequiermentNumber
 
 
 class VLSM:
