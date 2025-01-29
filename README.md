@@ -5,7 +5,7 @@ notament le fait de générer un réseau suivant en respectant les limites de cl
 
 Génération de VLSM valides en fonction du réseau subdivisé choisi.
 
-Un jeu en cours de developpement
+Un jeu en cours de developpement //Le jeu sera dev après les débuts de l'interface graphique
 
 
 À venir: Intégration d'une interface graphique accès outil de révision et interface jeu.
