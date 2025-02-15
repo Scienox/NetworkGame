@@ -1,6 +1,6 @@
 from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout,
                                 QVBoxLayout, QGridLayout, QPushButton,
-                                QLineEdit, QStackedWidget
+                                QLineEdit, QStackedWidget, QTableWidget
                                 )
 from .connect import *
 
@@ -53,23 +53,38 @@ class MainWindow(QMainWindow):
     def __buildIpConfig(self):
         self.layoutWidgetIp = QHBoxLayout(self.IpConfigPage)
         self.IpConfigPage.setLayout(self.layoutWidgetIp)
-        left = QWidget(parent=self.IpConfigPage)
-        right = QWidget(parent=self.IpConfigPage)
-        layoutLeft = QVBoxLayout(left)
-        layoutRight = QVBoxLayout(right)
+
+        #left = QWidget(parent=self.IpConfigPage)
+        #right = QWidget(parent=self.IpConfigPage)
+        #layoutLeft = QVBoxLayout(left)
+        #layoutRight = QVBoxLayout(right)
+        """
+        lineEdit IP | lineEdit {CIDR,MSR,MaxHost} | PushButton Validate
+        """
         left.setLayout(layoutLeft)
         right.setLayout(layoutRight)
         self.layoutWidgetIp.addWidget(left)
         self.layoutWidgetIp.addWidget(right)
 
-        self.pushButtonIp = QPushButton(parent=left, text="Generate")
+        self.pushButtonIp = QPushButton(parent=left, text="Analyser")
         self.lineEditIp = QLineEdit(parent=left)
         layoutLeft.addWidget(self.lineEditIp)
         layoutLeft.addWidget(self.pushButtonIp)
         layoutLeft.addStretch(1)
 
         self.lineEditCidr = QLineEdit(parent=right)
+
+
         layoutRight.addWidget(self.lineEditCidr)
+        columns = [
+            "Type", "Classe", "Réservation",
+            "@Reseau", "Masque de sous réseau", "CIDR",
+            "@Ipv4", "1er @Disponible", "Dernière @Disponible",
+            "@BroadCast", "Utilisateurs maximum"]
+        tabletest = QTableWidget(len(columns), 1, parent=self.IpConfigPage)
+        tabletest.setVerticalHeaderLabels(columns)
+        tabletest.horizontalHeader().setVisible(False)
+        self.layoutWidgetIp.addWidget(tabletest)
         layoutRight.addStretch(1)
 
         self.pushButtonIp.clicked.connect(lambda: printIp(self.lineEditIp.text(), self.lineEditCidr.text()))
