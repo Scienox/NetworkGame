@@ -1,4 +1,8 @@
-from PySide6.QtWidgets import QMainWindow, QWidget, QHBoxLayout, QVBoxLayout, QGridLayout, QPushButton, QLineEdit, QStackedWidget
+from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout,
+                                QVBoxLayout, QGridLayout, QPushButton,
+                                QLineEdit, QStackedWidget
+                                )
+from .connect import *
 
 
 class MainWindow(QMainWindow):
@@ -33,13 +37,6 @@ class MainWindow(QMainWindow):
         self.layoutCentralWidget.addWidget(self.stackedWidget)
         self.layoutCentralWidget.addStretch(30)
 
-
-        """self.layoutCentralWidget = QHBoxLayout(self.centralWidget())
-        self.layoutCentralWidget.setParent(self.centralWidget())
-        self.widgetIp = QWidget(self.centralWidget())
-        self.layoutCentralWidget.addWidget(self.widgetIp)
-        self.__buildWidgetiP()"""
-
     def __buildWelcomePage(self):
         self.layoutWelcomePageGrid = QGridLayout(self.welcomePage)
         self.buttonPageIpconfig = QPushButton(parent=self.welcomePage, text="IpConfig")
@@ -51,11 +48,13 @@ class MainWindow(QMainWindow):
         self.layoutWelcomePageGrid.addWidget(self.buttonPageBinaryinfo, 0, 1)
         self.layoutWelcomePageGrid.addWidget(self.buttonPageVlsm, 1, 0, 1, 2)
 
-    def __buildWidgetiP(self):
-        self.layoutWidgetIp = QHBoxLayout(self.widgetIp)
-        self.widgetIp.setLayout(self.layoutWidgetIp)
-        left = QWidget(parent=self.widgetIp)
-        right = QWidget(parent=self.widgetIp)
+        self.__buildIpConfig()
+
+    def __buildIpConfig(self):
+        self.layoutWidgetIp = QHBoxLayout(self.IpConfigPage)
+        self.IpConfigPage.setLayout(self.layoutWidgetIp)
+        left = QWidget(parent=self.IpConfigPage)
+        right = QWidget(parent=self.IpConfigPage)
         layoutLeft = QVBoxLayout(left)
         layoutRight = QVBoxLayout(right)
         left.setLayout(layoutLeft)
@@ -72,6 +71,8 @@ class MainWindow(QMainWindow):
         self.lineEditCidr = QLineEdit(parent=right)
         layoutRight.addWidget(self.lineEditCidr)
         layoutRight.addStretch(1)
+
+        self.pushButtonIp.clicked.connect(lambda: printIp(self.lineEditIp.text(), self.lineEditCidr.text()))
 
     def __menuBar(self):
         pass

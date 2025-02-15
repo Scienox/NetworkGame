@@ -1,6 +1,6 @@
-from ip_untils.ip import IP
-from ip_untils.vlsm import VLSM
-from ip_untils.subnet import Subnet
+from .ip import IP
+from .vlsm import VLSM
+from .subnet import Subnet
 from random import randint, seed
 
 

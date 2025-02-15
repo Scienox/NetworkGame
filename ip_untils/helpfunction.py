@@ -1,4 +1,4 @@
-from ip_untils.ip import IP
+from .ip import IP
 
 
 def hostsRequiermentNumber(hostNeeded, target=30):
