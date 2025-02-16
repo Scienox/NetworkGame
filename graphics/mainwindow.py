@@ -1,6 +1,7 @@
 from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout,
                                 QVBoxLayout, QGridLayout, QPushButton,
-                                QLineEdit, QStackedWidget, QTableWidget
+                                QLineEdit, QStackedWidget, QTableWidget,
+                                QComboBox
                                 )
 from .connect import *
 
@@ -51,8 +52,8 @@ class MainWindow(QMainWindow):
         self.__buildIpConfig()
 
     def __buildIpConfig(self):
-        self.layoutWidgetIp = QHBoxLayout(self.IpConfigPage)
-        self.IpConfigPage.setLayout(self.layoutWidgetIp)
+        self.layoutIpConfigWidget = QGridLayout(self.IpConfigPage)
+        self.IpConfigPage.setLayout(self.layoutIpConfigWidget)
 
         #left = QWidget(parent=self.IpConfigPage)
         #right = QWidget(parent=self.IpConfigPage)
@@ -61,31 +62,25 @@ class MainWindow(QMainWindow):
         """
         lineEdit IP | lineEdit {CIDR,MSR,MaxHost} | PushButton Validate
         """
-        left.setLayout(layoutLeft)
-        right.setLayout(layoutRight)
-        self.layoutWidgetIp.addWidget(left)
-        self.layoutWidgetIp.addWidget(right)
 
-        self.pushButtonIp = QPushButton(parent=left, text="Analyser")
-        self.lineEditIp = QLineEdit(parent=left)
-        layoutLeft.addWidget(self.lineEditIp)
-        layoutLeft.addWidget(self.pushButtonIp)
-        layoutLeft.addStretch(1)
-
-        self.lineEditCidr = QLineEdit(parent=right)
-
-
-        layoutRight.addWidget(self.lineEditCidr)
+        self.lineEditIp = QLineEdit(parent=self.IpConfigPage)
+        self.comboboxSelectType = QComboBox(parent=self.IpConfigPage)
+        self.lineEditNetworkLimite = QLineEdit(parent=self.IpConfigPage)
+        self.pushButtonIp = QPushButton(parent=self.IpConfigPage, text="Analyser")
         columns = [
             "Type", "Classe", "Réservation",
             "@Reseau", "Masque de sous réseau", "CIDR",
             "@Ipv4", "1er @Disponible", "Dernière @Disponible",
             "@BroadCast", "Utilisateurs maximum"]
-        tabletest = QTableWidget(len(columns), 1, parent=self.IpConfigPage)
-        tabletest.setVerticalHeaderLabels(columns)
-        tabletest.horizontalHeader().setVisible(False)
-        self.layoutWidgetIp.addWidget(tabletest)
-        layoutRight.addStretch(1)
+        self.tableIpConfig = QTableWidget(len(columns), 1, parent=self.IpConfigPage)
+        self.tableIpConfig.setVerticalHeaderLabels(columns)
+        self.tableIpConfig.horizontalHeader().setVisible(False)
+
+        self.layoutIpConfigWidget.addWidget(self.lineEditIp, 0, 0, 1, 1)
+        self.layoutIpConfigWidget.addWidget(self.comboboxSelectType, 0, 1, 1, 1)
+        self.layoutIpConfigWidget.addWidget(self.lineEditNetworkLimite, 0, 2, 1, 1)
+        self.layoutIpConfigWidget.addWidget(self.pushButtonIp, 1, 0, 1, 3)
+        self.layoutIpConfigWidget.addWidget(self.tableIpConfig, 2, 0, 1, 3)
 
         self.pushButtonIp.clicked.connect(lambda: printIp(self.lineEditIp.text(), self.lineEditCidr.text()))
 
