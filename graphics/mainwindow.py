@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout,
                                 QVBoxLayout, QGridLayout, QPushButton,
                                 QLineEdit, QStackedWidget, QTableWidget,
-                                QComboBox, QHeaderView
+                                QComboBox, QHeaderView, QLabel
                                 )
 from .connect import *
 
@@ -19,6 +19,7 @@ class MainWindow(QMainWindow):
         self.__buildCentralWidget()
 
         self.__menuBar()
+
 
     def __buildCentralWidget(self):
         self.layoutCentralWidget = QVBoxLayout(self.centralWidget())
@@ -63,6 +64,7 @@ class MainWindow(QMainWindow):
         lineEdit IP | lineEdit {CIDR,MSR,MaxHost} | PushButton Validate
         """
 
+        self.labelIp = QLabel(parent=self.IpConfigPage, text="@Ip:")
         self.lineEditIp = QLineEdit(parent=self.IpConfigPage)
         self.comboboxSelectType = QComboBox(parent=self.IpConfigPage)
         self.comboboxSelectType.addItems(["CIDR", "Masque de sous réseau", "Nombre d'utilisateur"])
@@ -71,7 +73,7 @@ class MainWindow(QMainWindow):
         columns = [
             "Type", "Classe", "Réservation",
             "@Reseau", "Masque de sous réseau", "CIDR",
-            "@Ipv4", "1er @Disponible", "Dernière @Disponible",
+            "@Ipv4", "1ère @Disponible", "Dernière @Disponible",
             "@BroadCast", "Utilisateurs maximum"]
         self.tableIpConfig = QTableWidget(len(columns), 1, parent=self.IpConfigPage)
         self.tableIpConfig.setVerticalHeaderLabels(columns)
@@ -79,11 +81,12 @@ class MainWindow(QMainWindow):
         self.tableIpConfig.setColumnWidth(0, 200)
         self.tableIpConfig.horizontalHeader().setVisible(False)
 
-        self.layoutIpConfigWidget.addWidget(self.lineEditIp, 0, 0, 1, 1)
-        self.layoutIpConfigWidget.addWidget(self.comboboxSelectType, 0, 1, 1, 1)
-        self.layoutIpConfigWidget.addWidget(self.lineEditNetworkLimite, 0, 2, 1, 1)
-        self.layoutIpConfigWidget.addWidget(self.pushButtonIp, 1, 0, 1, 3)
-        self.layoutIpConfigWidget.addWidget(self.tableIpConfig, 2, 0, 1, 3)
+        self.layoutIpConfigWidget.addWidget(self.labelIp, 0, 0, 1, 1)
+        self.layoutIpConfigWidget.addWidget(self.lineEditIp, 0, 1, 1, 1)
+        self.layoutIpConfigWidget.addWidget(self.comboboxSelectType, 0, 2, 1, 1)
+        self.layoutIpConfigWidget.addWidget(self.lineEditNetworkLimite, 0, 3, 1, 1)
+        self.layoutIpConfigWidget.addWidget(self.pushButtonIp, 1, 0, 1, 4)
+        self.layoutIpConfigWidget.addWidget(self.tableIpConfig, 2, 0, 1, 4)
 
         self.pushButtonIp.clicked.connect(lambda: showIpConfig(self.lineEditIp.text(), self.comboboxSelectType.currentIndex(),
                                                                 self.lineEditNetworkLimite.text(), self.tableIpConfig))
