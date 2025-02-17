@@ -1,7 +1,7 @@
 from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout,
                                 QVBoxLayout, QGridLayout, QPushButton,
                                 QLineEdit, QStackedWidget, QTableWidget,
-                                QComboBox
+                                QComboBox, QHeaderView
                                 )
 from .connect import *
 
@@ -65,6 +65,7 @@ class MainWindow(QMainWindow):
 
         self.lineEditIp = QLineEdit(parent=self.IpConfigPage)
         self.comboboxSelectType = QComboBox(parent=self.IpConfigPage)
+        self.comboboxSelectType.addItems(["CIDR", "Masque de sous réseau", "Nombre d'utilisateur"])
         self.lineEditNetworkLimite = QLineEdit(parent=self.IpConfigPage)
         self.pushButtonIp = QPushButton(parent=self.IpConfigPage, text="Analyser")
         columns = [
@@ -74,6 +75,8 @@ class MainWindow(QMainWindow):
             "@BroadCast", "Utilisateurs maximum"]
         self.tableIpConfig = QTableWidget(len(columns), 1, parent=self.IpConfigPage)
         self.tableIpConfig.setVerticalHeaderLabels(columns)
+        self.tableIpConfig.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+        self.tableIpConfig.setColumnWidth(0, 200)
         self.tableIpConfig.horizontalHeader().setVisible(False)
 
         self.layoutIpConfigWidget.addWidget(self.lineEditIp, 0, 0, 1, 1)
@@ -82,7 +85,8 @@ class MainWindow(QMainWindow):
         self.layoutIpConfigWidget.addWidget(self.pushButtonIp, 1, 0, 1, 3)
         self.layoutIpConfigWidget.addWidget(self.tableIpConfig, 2, 0, 1, 3)
 
-        self.pushButtonIp.clicked.connect(lambda: printIp(self.lineEditIp.text(), self.lineEditCidr.text()))
+        self.pushButtonIp.clicked.connect(lambda: showIpConfig(self.lineEditIp.text(), self.comboboxSelectType.currentIndex(),
+                                                                self.lineEditNetworkLimite.text(), self.tableIpConfig))
 
     def __menuBar(self):
         pass
