@@ -58,6 +58,7 @@ class MainWindow(QMainWindow):
 
         self.__buildIpConfig()
         self.__buildIpBinary()
+        self.__buildVlsm()
 
     def __buildIpConfig(self):
         self.layoutIpConfigWidget = QGridLayout(self.IpConfigPage)
@@ -123,6 +124,50 @@ class MainWindow(QMainWindow):
 
         self.pushButtonIpB.clicked.connect(lambda: showBinaryInfo(self.lineEditIpB.text(), self.comboboxSelectTypeB.currentIndex(),
                                                                   self.lineEditNetworkLimiteB.text(), self.tableIpBinary))
+
+    def __buildVlsm(self):
+        self.layoutVlsm = QGridLayout(self.vlsmPage)
+        self.vlsmPage.setLayout(self.layoutVlsm)
+
+        self.labelIpV = QLabel(parent=self.vlsmPage, text="@Ip:")
+        self.lineEditIpV = QLineEdit(parent=self.vlsmPage)
+        self.comboboxSelectTypeV = QComboBox(parent=self.vlsmPage)
+        self.comboboxSelectTypeV.addItems(["CIDR", "Masque de sous réseau", "Nombre d'utilisateur"])
+        self.lineEditNetworkLimiteV = QLineEdit(parent=self.vlsmPage)
+        self.pushButtonIpV = QPushButton(parent=self.vlsmPage, text="Analyser")
+
+        self.tableVlsmNetwork = QTableWidget(2, 1, parent=self.vlsmPage)
+        self.tableVlsmNetwork.setVerticalHeaderLabels(["Nom du réseau", "Nombre d'hôtes"])
+        self.tableVlsmNetwork.setHorizontalHeaderLabels([])
+        self.tableVlsmNetwork.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.tableVlsmNetwork.setFixedHeight(
+            self.tableVlsmNetwork.rowHeight(0) * self.tableVlsmNetwork.rowCount()
+        )
+        self.tableVlsmNetwork.setColumnWidth(0, 200)
+        self.tableVlsmNetwork.horizontalHeader().setVisible(False)
+
+        rows = []
+        columns = [
+            "@Ipv4", "Masque de sous réseau", "@Réseau", "Utilisateurs maximum", "CIDR"
+        ]
+        self.tableVlsm = QTableWidget(len(rows), len(columns), parent=self.vlsmPage)
+        self.tableVlsm.setVerticalHeaderLabels(rows)
+        self.tableVlsm.setHorizontalHeaderLabels(columns)
+        self.tableVlsm.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.tableVlsm.setColumnWidth(0, 200)
+        self.tableVlsm.verticalHeader().setVisible(False)
+
+        self.layoutVlsm.addWidget(self.labelIpV, 0, 0, 1, 1)
+        self.layoutVlsm.addWidget(self.lineEditIpV, 0, 1, 1, 1)
+        self.layoutVlsm.addWidget(self.comboboxSelectTypeV, 0, 2, 1, 1)
+        self.layoutVlsm.addWidget(self.lineEditNetworkLimiteV, 0, 3, 1, 1)
+        self.layoutVlsm.addWidget(self.tableVlsmNetwork, 1, 0, 1, 4)
+        self.layoutVlsm.addWidget(self.pushButtonIpV, 2, 0, 1, 4)
+        self.layoutVlsm.addWidget(self.tableVlsm, 3, 0, 1, 4)
+
+        self.tableVlsm.setRowCount(1)
+        self.tableVlsm.setItem(0, 0, QTableWidgetItem("Test"))
+
 
     def __menuBar(self):
         pass
