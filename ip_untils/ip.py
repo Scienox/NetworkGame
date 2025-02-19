@@ -14,6 +14,7 @@ class IP:
         self.ipHostBinary = self.convertToBinary(self.ipHost_)
         if len(self.ipHost_) != 4:
             raise ValueError("Ip is composed of 4 Bytes and 32 bits ex:192.168.0.0")
+        self.__debugIp()        
         self.subMaskBinary = self.buildSubMask()
         self.subMask_ = self.convertToDecimal(self.subMaskBinary)
         self.networkBinary = self.buildNetwork()
@@ -211,6 +212,11 @@ class IP:
 
     def convertToString(self, vector):
         return ".".join(str(octet) for octet in vector)
+    
+    def __debugIp(self):
+        for octet in self.ipHost_:
+            if (octet < 0) or (255 < octet):
+                raise ValueError("One byte has a range 0 to 255")
 
     def get_class(self):
         if self.network_[0] < 127:
