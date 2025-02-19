@@ -1,3 +1,6 @@
+from copy import deepcopy
+
+
 class IP:
     def __init__(self, ipHost, cidr, name=""):
         if 30 < cidr or cidr < 1:
@@ -11,8 +14,8 @@ class IP:
         self.ipHostBinary = self.convertToBinary(self.ipHost_)
         if len(self.ipHost_) != 4:
             raise ValueError("Ip is composed of 4 Bytes and 32 bits ex:192.168.0.0")
-        self.maskBinary = self.buildSubMask()
-        self.subMask_ = self.convertToDecimal(self.maskBinary)
+        self.subMaskBinary = self.buildSubMask()
+        self.subMask_ = self.convertToDecimal(self.subMaskBinary)
         self.networkBinary = self.buildNetwork()
         self.network_ = self.convertToDecimal(self.networkBinary)
 
@@ -136,31 +139,31 @@ class IP:
 
     def buildNetwork(self):
         matrixBinary = [[0 for bit in range(8)] for _ in range(4)]
-        for octet in range(len(self.maskBinary)):
-            for bit in range(len(self.maskBinary[octet])):
-                if self.maskBinary[octet][bit] == 1:
+        for octet in range(len(self.subMaskBinary)):
+            for bit in range(len(self.subMaskBinary[octet])):
+                if self.subMaskBinary[octet][bit] == 1:
                     matrixBinary[octet][bit] = self.ipHostBinary[octet][bit]
                 else:
                     matrixBinary[octet][bit] = 0
         return matrixBinary
 
     def get_first_host_b(self):
-        matrixBinary = self.networkBinary.copy()
+        matrixBinary = deepcopy(self.networkBinary)
         matrixBinary[len(matrixBinary)-1][len(matrixBinary[len(matrixBinary)-1])-1] = 1
         return matrixBinary
 
     def get_broadcast_b(self):
-        matrixBinary = self.networkBinary.copy()
+        matrixBinary = deepcopy(self.networkBinary)
         for octet in range(len(matrixBinary)-1, -1, -1):
             for bit in range(len(matrixBinary[len(matrixBinary)-1])-1, -1, -1):
-                if self.maskBinary[octet][bit] == 0:
+                if self.subMaskBinary[octet][bit] == 0:
                     matrixBinary[octet][bit] = 1
                 else:
                     return matrixBinary
         return matrixBinary
 
     def get_last_host_b(self):
-        matrixBinary = self.broadcastBinary.copy()
+        matrixBinary = deepcopy(self.broadcastBinary)
         matrixBinary[len(matrixBinary)-1][len(matrixBinary[len(matrixBinary)-1])-1] = 0
         return matrixBinary
 
@@ -189,7 +192,7 @@ class IP:
             "1-9-17-25": 128
         }
 
-        nextNetwork = self.network_.copy()
+        nextNetwork = deepcopy(self.network_)
         for key in magic_table.keys():
             if str(self.cidr) in key:
                 vectorKey = key.split("-")

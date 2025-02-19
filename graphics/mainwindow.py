@@ -29,40 +29,39 @@ class MainWindow(QMainWindow):
         self.homeButton.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
         self.welcomePage = QWidget(parent=self.stackedWidget)
         self.IpConfigPage = QWidget(parent=self.stackedWidget)
+        self.ipBinaryPage = QWidget(parent=self.stackedWidget)
+        self.vlsmPage = QWidget(parent=self.stackedWidget)
         self.__buildWelcomePage()
 
         self.stackedWidget.addWidget(self.welcomePage)
         self.stackedWidget.addWidget(self.IpConfigPage)
+        self.stackedWidget.addWidget(self.ipBinaryPage)
+        self.stackedWidget.addWidget(self.vlsmPage)
 
         self.layoutCentralWidget.addWidget(self.homeButton)
-        self.layoutCentralWidget.addStretch(1)
+        #self.layoutCentralWidget.addStretch(1)
         self.layoutCentralWidget.addWidget(self.stackedWidget)
-        self.layoutCentralWidget.addStretch(30)
+        #self.layoutCentralWidget.addStretch(30)
 
     def __buildWelcomePage(self):
         self.layoutWelcomePageGrid = QGridLayout(self.welcomePage)
         self.buttonPageIpconfig = QPushButton(parent=self.welcomePage, text="IpConfig")
         self.buttonPageIpconfig.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(1))
-        self.buttonPageBinaryinfo = QPushButton(parent=self.welcomePage, text="Ip binaire")
+        self.buttonPageBinary = QPushButton(parent=self.welcomePage, text="Ip binaire")
+        self.buttonPageBinary.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(2))
         self.buttonPageVlsm = QPushButton(parent=self.welcomePage, text="VLSM")
+        self.buttonPageVlsm.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(3))
 
         self.layoutWelcomePageGrid.addWidget(self.buttonPageIpconfig, 0, 0)
-        self.layoutWelcomePageGrid.addWidget(self.buttonPageBinaryinfo, 0, 1)
+        self.layoutWelcomePageGrid.addWidget(self.buttonPageBinary, 0, 1)
         self.layoutWelcomePageGrid.addWidget(self.buttonPageVlsm, 1, 0, 1, 2)
 
         self.__buildIpConfig()
+        self.__buildIpBinary()
 
     def __buildIpConfig(self):
         self.layoutIpConfigWidget = QGridLayout(self.IpConfigPage)
         self.IpConfigPage.setLayout(self.layoutIpConfigWidget)
-
-        #left = QWidget(parent=self.IpConfigPage)
-        #right = QWidget(parent=self.IpConfigPage)
-        #layoutLeft = QVBoxLayout(left)
-        #layoutRight = QVBoxLayout(right)
-        """
-        lineEdit IP | lineEdit {CIDR,MSR,MaxHost} | PushButton Validate
-        """
 
         self.labelIp = QLabel(parent=self.IpConfigPage, text="@Ip:")
         self.lineEditIp = QLineEdit(parent=self.IpConfigPage)
@@ -70,14 +69,15 @@ class MainWindow(QMainWindow):
         self.comboboxSelectType.addItems(["CIDR", "Masque de sous réseau", "Nombre d'utilisateur"])
         self.lineEditNetworkLimite = QLineEdit(parent=self.IpConfigPage)
         self.pushButtonIp = QPushButton(parent=self.IpConfigPage, text="Analyser")
-        columns = [
+        rows = [
             "Type", "Classe", "Réservation",
             "@Reseau", "Masque de sous réseau", "CIDR",
             "@Ipv4", "1ère @Disponible", "Dernière @Disponible",
-            "@BroadCast", "Utilisateurs maximum"]
-        self.tableIpConfig = QTableWidget(len(columns), 1, parent=self.IpConfigPage)
-        self.tableIpConfig.setVerticalHeaderLabels(columns)
-        self.tableIpConfig.horizontalHeader().setSectionResizeMode(0, QHeaderView.Stretch)
+            "@BroadCast", "Utilisateurs maximum"
+        ]
+        self.tableIpConfig = QTableWidget(len(rows), 1, parent=self.IpConfigPage)
+        self.tableIpConfig.setVerticalHeaderLabels(rows)
+        self.tableIpConfig.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableIpConfig.setColumnWidth(0, 200)
         self.tableIpConfig.horizontalHeader().setVisible(False)
 
@@ -91,6 +91,39 @@ class MainWindow(QMainWindow):
         self.pushButtonIp.clicked.connect(lambda: showIpConfig(self.lineEditIp.text(), self.comboboxSelectType.currentIndex(),
                                                                 self.lineEditNetworkLimite.text(), self.tableIpConfig))
 
+    def __buildIpBinary(self):
+        self.layoutIpBinary = QGridLayout(self.ipBinaryPage)
+        self.ipBinaryPage.setLayout(self.layoutIpBinary)
+
+        self.labelIpB = QLabel(parent=self.ipBinaryPage, text="@Ip:")
+        self.lineEditIpB = QLineEdit(parent=self.ipBinaryPage)
+        self.comboboxSelectTypeB = QComboBox(parent=self.ipBinaryPage)
+        self.comboboxSelectTypeB.addItems(["CIDR", "Masque de sous réseau", "Nombre d'utilisateur"])
+        self.lineEditNetworkLimiteB = QLineEdit(parent=self.ipBinaryPage)
+        self.pushButtonIpB = QPushButton(parent=self.ipBinaryPage, text="Analyser")
+        rows = [
+            "Masque de sous réseau", "@Réseau", "@Ip",
+            "1ère @Disponible", "Dernière @Disponible", "@Broadcast"
+        ]
+        columns = [
+            "Format décimal", "Partie binaire du réseau", "Partie binaire d'hôtes"
+        ]
+        self.tableIpBinary = QTableWidget(len(rows), len(columns), parent=self.ipBinaryPage)
+        self.tableIpBinary.setVerticalHeaderLabels(rows)
+        self.tableIpBinary.setHorizontalHeaderLabels(columns)
+        self.tableIpBinary.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.tableIpBinary.setColumnWidth(0, 200)
+
+        self.layoutIpBinary.addWidget(self.labelIpB, 0, 0, 1, 1)
+        self.layoutIpBinary.addWidget(self.lineEditIpB, 0, 1, 1, 1)
+        self.layoutIpBinary.addWidget(self.comboboxSelectTypeB, 0, 2, 1, 1)
+        self.layoutIpBinary.addWidget(self.lineEditNetworkLimiteB, 0, 3, 1, 1)
+        self.layoutIpBinary.addWidget(self.pushButtonIpB, 1, 0, 1, 4)
+        self.layoutIpBinary.addWidget(self.tableIpBinary, 2, 0, 1, 4)
+
+        self.pushButtonIpB.clicked.connect(lambda: showBinaryInfo(self.lineEditIpB.text(), self.comboboxSelectTypeB.currentIndex(),
+                                                                  self.lineEditNetworkLimiteB.text(), self.tableIpBinary))
+
     def __menuBar(self):
         pass
 
@@ -99,8 +132,31 @@ class MainWindow(QMainWindow):
             * {
                 background-color: #21252c;
                 color: #acacac;
+                border: 2px solid #1f4141;
+                border-radius: 5px;
                 font-family: Arial, sans-serif;
                 font-size: 14px;
+            }
+            QTableWidget {
+                border: default;
+                border-color: default;
+            }
+            QComboBox {
+                
+            }
+            QComboBox:drop-down {
+                border: none;
+                
+            }
+            QComboBox QListView {
+                border: none;
+                background-color: #2f3f3f;
+                margin-top: 0px;
+                outline: 0px;
+            }
+            QComboBox QListView:item {
+                border: 5px solid;
+                border-radius: 5px;
             }
             QWidget {
                 
@@ -112,7 +168,7 @@ class MainWindow(QMainWindow):
                 
             }
             QLabel {
-                
+                border: none;
             }
             """
         self.setStyleSheet(stylesheet)
