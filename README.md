@@ -1,11 +1,28 @@
 # NetworkGame
 
-Génération d'une adresse Ip équipé de diverses méthodes sur ses informations
-notament le fait de générer un réseau suivant en respectant les limites de class et de reservation.
+Outil de réseau graphique:
 
-Génération de VLSM valides en fonction du réseau subdivisé choisi.
+    Analyse Ipv4:
+        1) Entrer une adresse Ipv4 valide avec masque de sous réseau ou cidr ou nombre d'hôtes requis
+        2) Infos sur les information qui la compose type, classe, réservation, @Réseau,
+            masque de sous réseau, CIDR, 1ère @Disponible, dernière @Disponible, @Broadcast,
+            nombre d'utilisateurs possible
+    
+    Analyse binaire:
+        1) Entrer une adresse Ipv4 valide avec masque de sous réseau ou cidr ou nombre d'hôtes requis
+        2) Comparaison des adresses d'un réseau, masquque de sous réseau en binaire dévisé
+            par la partie réseau et la partie hôtes
 
-Un jeu en cours de developpement //Le jeu sera dev après les débuts de l'interface graphique
+    VLSM:
+        1) Entrer une adresse réseau à subdivisé valide avec masque de sous réseau ou cidr ou nombre 
+            d'hôtes requis
+        2) Ajout de sous réseau composé d'un nom (facultatif) et d'un nombre d'hôtes requis
+        3) Supression de sous réseau par sélection
+        4) Génération des sous réseau via l'adresse réseau de subdivision comme tel Nom, masque de sous
+            réseau, nombres d'hôtes possible, CIDR
 
+    Génération de plan d'adressage:
+        à venir
 
-À venir: Intégration d'une interface graphique accès outil de révision et interface jeu.
+    Jeux/Entraînement:
+        À venir
