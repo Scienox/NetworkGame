@@ -145,10 +145,12 @@ class MainWindow(QMainWindow):
         )
         self.tableVlsmNetwork.setColumnWidth(0, 200)
         self.tableVlsmNetwork.horizontalHeader().setVisible(False)
+        self.pushButtonAddSubNetwork = QPushButton(self.vlsmPage, text="Ajouté un sous réseau")
+        self.pushButtonRemoveSubNetwork = QPushButton(self.vlsmPage, text="Supprimé un réseau")
 
         rows = []
         columns = [
-            "@Ipv4", "Masque de sous réseau", "@Réseau", "Utilisateurs maximum", "CIDR"
+            "Nom", "@Ipv4", "Masque de sous réseau", "@Réseau", "Utilisateurs maximum", "CIDR"
         ]
         self.tableVlsm = QTableWidget(len(rows), len(columns), parent=self.vlsmPage)
         self.tableVlsm.setVerticalHeaderLabels(rows)
@@ -162,11 +164,17 @@ class MainWindow(QMainWindow):
         self.layoutVlsm.addWidget(self.comboboxSelectTypeV, 0, 2, 1, 1)
         self.layoutVlsm.addWidget(self.lineEditNetworkLimiteV, 0, 3, 1, 1)
         self.layoutVlsm.addWidget(self.tableVlsmNetwork, 1, 0, 1, 4)
-        self.layoutVlsm.addWidget(self.pushButtonIpV, 2, 0, 1, 4)
-        self.layoutVlsm.addWidget(self.tableVlsm, 3, 0, 1, 4)
+        self.layoutVlsm.addWidget(self.pushButtonAddSubNetwork, 2, 0, 1, 2)
+        self.layoutVlsm.addWidget(self.pushButtonRemoveSubNetwork, 2, 3, 1, 1)
+        self.layoutVlsm.addWidget(self.pushButtonIpV, 3, 0, 1, 4)
+        self.layoutVlsm.addWidget(self.tableVlsm, 4, 0, 1, 4)
 
-        self.tableVlsm.setRowCount(1)
-        self.tableVlsm.setItem(0, 0, QTableWidgetItem("Test"))
+        self.pushButtonAddSubNetwork.clicked.connect(lambda: addNetwork(self.tableVlsmNetwork))
+        self.pushButtonRemoveSubNetwork.clicked.connect(lambda: removeNetwork(self.tableVlsmNetwork))
+        self.pushButtonIpV.clicked.connect(lambda: makeVlsm(self.tableVlsmNetwork,
+                                                            self.tableVlsm, self.lineEditIpV.text(),
+                                                            self.comboboxSelectTypeV.currentIndex(),
+                                                            self.lineEditNetworkLimiteV.text()))
 
 
     def __menuBar(self):

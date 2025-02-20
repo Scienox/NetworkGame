@@ -6,9 +6,9 @@ from .helpfunction import hostsRequiermentNumber
 class VLSM:
     def __init__(self, network, cidr, hosts:"name1:n1,name2:n2,name+1:n+1"): # type: ignore
         necessaryHost = sum([hostsRequiermentNumber(int(numberOfHosts.split(":")[1])) for numberOfHosts in hosts.split(",")])
-        self.subdividedNetwork = IP(network, cidr, "VLSM")
-        if self.subdividedNetwork.totalHost < necessaryHost:
-            raise ValueError(f"Your subdivised network is too short. {hostsRequiermentNumber(necessaryHost)} minimum. Only {self.subdividedNetwork.totalHost} hosts are avaible.")
+        self.subdivisedNetwork = IP(network, cidr, "VLSM")
+        if self.subdivisedNetwork.totalHost < necessaryHost:
+            raise ValueError(f"Your subdivised network is too short. {hostsRequiermentNumber(necessaryHost)} minimum. Only {self.subdivisedNetwork.totalHost} hosts are avaible.")
         self.hosts = [(numberOfHosts.split(":")[0], int(numberOfHosts.split(":")[1])) for numberOfHosts in hosts.split(",")]
         self.hosts = list(reversed(sorted(self.hosts, key=lambda x: x[1])))
         
@@ -25,7 +25,7 @@ class VLSM:
             return self.selectMask(numberOfHosts, cidrTarget-1)
 
     def generate_sub_network(self):
-        networkTarget = self.subdividedNetwork
+        networkTarget = self.subdivisedNetwork
 
         for host in range(len(self.hosts)):
             newCIDR = self.selectMask(self.hosts[host][1])

@@ -1,4 +1,5 @@
 from ip_untils.ip import IP
+from ip_untils.vlsm import VLSM
 from ip_untils.helpfunction import cidrRequiermentForHost, cidrRequiermentForSubnetMask
 from PySide6.QtWidgets import QTableWidgetItem
 
@@ -67,3 +68,49 @@ def showBinaryInfo(ip, choiceDelimiter, delimiterNetwork, table):
         elementHostPart = QTableWidgetItem(hostPart)
         table.setItem(row, 1, elementNetPart)
         table.setItem(row, 2, elementHostPart)
+
+
+def addNetwork(table):
+    columnCount = table.columnCount()
+    table.insertColumn(columnCount)
+
+
+def removeNetwork(table):
+    table.removeColumn(table.columnCount())
+    
+
+def readTable(table):
+    rows = table.rowCount()
+    columns = table.columnCount()
+    for row in range(rows):
+        for column in range(columns):
+            yield table.item(row, column)
+
+
+def readColumnTable(table, row):
+    columns = table.columnCount()
+    for column in range(columns):
+        yield table.item(row, column)
+
+
+def getNameNetwork(table):
+    columns = table.columnCount()
+    for column in range(columns):
+        name, numberHost = table.item(0, column), table.item(1, column)
+        yield name, numberHost
+
+
+def readVlsm(vlsm):
+    for subNetwork in vlsm.subNetworks:
+        yield subNetwork
+
+
+def makeVlsm(tableNetwork, tableVlsm, subDivisedNetwork, choiceDelimiter, delimiterNetwork):
+    tableVlsm.setRowCount(0)
+    subNetwork = ","
+    subNetwork = subNetwork.join(f"{name.text() if name != None else ''}:{numberHost.text()}" for name,
+                                  numberHost in getNameNetwork(tableNetwork))
+    cidr = __selectChoiceCidr(choiceDelimiter, delimiterNetwork)
+    vlsm = VLSM(subDivisedNetwork, cidr, subNetwork)
+    rowCurrent = tableVlsm.rowCount()
+    
