@@ -3,6 +3,7 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout,
                                 QLineEdit, QStackedWidget, QTableWidget,
                                 QComboBox, QHeaderView, QLabel
                                 )
+from PySide6.QtCore import Qt
 from .connect import *
 
 
@@ -136,21 +137,23 @@ class MainWindow(QMainWindow):
         self.lineEditNetworkLimiteV = QLineEdit(parent=self.vlsmPage)
         self.pushButtonIpV = QPushButton(parent=self.vlsmPage, text="Analyser")
 
-        self.tableVlsmNetwork = QTableWidget(2, 1, parent=self.vlsmPage)
+        self.tableVlsmNetwork = QTableWidget(2, 0, parent=self.vlsmPage)
         self.tableVlsmNetwork.setVerticalHeaderLabels(["Nom du réseau", "Nombre d'hôtes"])
         self.tableVlsmNetwork.setHorizontalHeaderLabels([])
-        self.tableVlsmNetwork.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        #self.tableVlsmNetwork.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableVlsmNetwork.setFixedHeight(
-            self.tableVlsmNetwork.rowHeight(0) * self.tableVlsmNetwork.rowCount()
+            self.tableVlsmNetwork.rowHeight(0) * self.tableVlsmNetwork.rowCount() + 17
         )
         self.tableVlsmNetwork.setColumnWidth(0, 200)
         self.tableVlsmNetwork.horizontalHeader().setVisible(False)
+        self.tableVlsmNetwork.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
+        self.tableVlsmNetwork.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
         self.pushButtonAddSubNetwork = QPushButton(self.vlsmPage, text="Ajouté un sous réseau")
-        self.pushButtonRemoveSubNetwork = QPushButton(self.vlsmPage, text="Supprimé un réseau")
+        self.pushButtonRemoveSubNetwork = QPushButton(self.vlsmPage, text="Supprimé le sous réseau sélectionné")
 
         rows = []
         columns = [
-            "Nom", "@Ipv4", "Masque de sous réseau", "@Réseau", "Utilisateurs maximum", "CIDR"
+            "Nom", "Masque de sous réseau", "@Réseau", "Utilisateurs maximum", "CIDR"
         ]
         self.tableVlsm = QTableWidget(len(rows), len(columns), parent=self.vlsmPage)
         self.tableVlsm.setVerticalHeaderLabels(rows)

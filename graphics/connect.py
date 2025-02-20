@@ -73,10 +73,12 @@ def showBinaryInfo(ip, choiceDelimiter, delimiterNetwork, table):
 def addNetwork(table):
     columnCount = table.columnCount()
     table.insertColumn(columnCount)
+    table.setColumnWidth(columnCount, 100)
 
 
 def removeNetwork(table):
-    table.removeColumn(table.columnCount())
+    columnCurrent = table.currentColumn()
+    table.removeColumn(columnCurrent)
     
 
 def readTable(table):
@@ -113,4 +115,13 @@ def makeVlsm(tableNetwork, tableVlsm, subDivisedNetwork, choiceDelimiter, delimi
     cidr = __selectChoiceCidr(choiceDelimiter, delimiterNetwork)
     vlsm = VLSM(subDivisedNetwork, cidr, subNetwork)
     rowCurrent = tableVlsm.rowCount()
-    
+    methodes = ["name", "subMask", "network", "totalHost", "cidr"]
+
+    for subnet_work in readVlsm(vlsm):
+        tableVlsm.insertRow(rowCurrent)
+        for methodeCurrent in range(len(methodes)):
+            methode = methodes[methodeCurrent]
+            ipInfo = getattr(subnet_work, methode)
+            newItem = QTableWidgetItem(str(ipInfo))
+            tableVlsm.setItem(rowCurrent, methodeCurrent, newItem)
+        rowCurrent += 1
