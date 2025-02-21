@@ -150,7 +150,7 @@ class IP:
 
     def get_first_host_b(self):
         matrixBinary = deepcopy(self.networkBinary)
-        matrixBinary[len(matrixBinary)-1][len(matrixBinary[len(matrixBinary)-1])-1] = 1
+        matrixBinary[-1][-1] = 1
         return matrixBinary
 
     def get_broadcast_b(self):
@@ -165,7 +165,7 @@ class IP:
 
     def get_last_host_b(self):
         matrixBinary = deepcopy(self.broadcastBinary)
-        matrixBinary[len(matrixBinary)-1][len(matrixBinary[len(matrixBinary)-1])-1] = 0
+        matrixBinary[-1][-1] = 0
         return matrixBinary
 
     def get_next_network(self, cidr):
