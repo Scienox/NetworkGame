@@ -32,12 +32,14 @@ class MainWindow(QMainWindow):
         self.IpConfigPage = QWidget(parent=self.stackedWidget)
         self.ipBinaryPage = QWidget(parent=self.stackedWidget)
         self.vlsmPage = QWidget(parent=self.stackedWidget)
+        self.addresingPlanPage = QWidget(parent=self.stackedWidget)
         self.__buildWelcomePage()
 
         self.stackedWidget.addWidget(self.welcomePage)
         self.stackedWidget.addWidget(self.IpConfigPage)
         self.stackedWidget.addWidget(self.ipBinaryPage)
         self.stackedWidget.addWidget(self.vlsmPage)
+        self.stackedWidget.addWidget(self.addresingPlanPage)
 
         self.layoutCentralWidget.addWidget(self.homeButton)
         #self.layoutCentralWidget.addStretch(1)
@@ -52,14 +54,18 @@ class MainWindow(QMainWindow):
         self.buttonPageBinary.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(2))
         self.buttonPageVlsm = QPushButton(parent=self.welcomePage, text="VLSM")
         self.buttonPageVlsm.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(3))
+        self.buttonPageAddressingPlan = QPushButton(self.stackedWidget, text="Plan d'adressage")
+        self.buttonPageAddressingPlan.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(4))
 
         self.layoutWelcomePageGrid.addWidget(self.buttonPageIpconfig, 0, 0)
         self.layoutWelcomePageGrid.addWidget(self.buttonPageBinary, 0, 1)
-        self.layoutWelcomePageGrid.addWidget(self.buttonPageVlsm, 1, 0, 1, 2)
+        self.layoutWelcomePageGrid.addWidget(self.buttonPageVlsm, 1, 0)
+        self.layoutWelcomePageGrid.addWidget(self.buttonPageAddressingPlan, 1, 1)
 
         self.__buildIpConfig()
         self.__buildIpBinary()
         self.__buildVlsm()
+        self.__buildAddressingPlan()
 
     def __buildIpConfig(self):
         self.layoutIpConfigWidget = QGridLayout(self.IpConfigPage)
@@ -179,6 +185,8 @@ class MainWindow(QMainWindow):
                                                             self.comboboxSelectTypeV.currentIndex(),
                                                             self.lineEditNetworkLimiteV.text()))
 
+    def __buildAddressingPlan(self):
+        pass
 
     def __menuBar(self):
         pass
