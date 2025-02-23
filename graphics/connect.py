@@ -1,7 +1,8 @@
 from ip_untils.ip import IP
 from ip_untils.vlsm import VLSM
 from ip_untils.helpfunction import cidrRequiermentForHost, cidrRequiermentForSubnetMask
-from PySide6.QtWidgets import QTableWidgetItem
+from PySide6.QtWidgets import QTableWidgetItem, QHeaderView
+
 
 def __selectChoiceCidr(choiceDelimiter, delimiterNetwork):
     cidr = None
@@ -42,9 +43,9 @@ def detectHostPart(adressBinary, cidr):
         dotIndex += 1
         element = str(adressBinaryToStr[index])
         if index < cidr:
-            netPart += element + ("." if (dotIndex % 8 == 0 and dotIndex < 25) else '')
+            netPart += element + (" ." if (dotIndex % 8 == 0 and dotIndex < 25) else '') + ' '
         else:
-            hostPart += element + ("." if (dotIndex % 8 == 0 and dotIndex < 25) else '')
+            hostPart += element + (" ." if (dotIndex % 8 == 0 and dotIndex < 25) else '') + ' '
     return netPart, hostPart
 
 
@@ -109,6 +110,7 @@ def readVlsm(vlsm):
 
 def makeVlsm(tableNetwork, tableVlsm, subDivisedNetwork, choiceDelimiter, delimiterNetwork):
     tableVlsm.setRowCount(0)
+    updateRowSizeTable(tableVlsm, 20)
     subNetwork = ","
     subNetwork = subNetwork.join(f"{name.text() if name != None else ''}:{numberHost.text()}" for name,
                                   numberHost in getNameNetwork(tableNetwork))
@@ -119,9 +121,19 @@ def makeVlsm(tableNetwork, tableVlsm, subDivisedNetwork, choiceDelimiter, delimi
 
     for subnet_work in readVlsm(vlsm):
         tableVlsm.insertRow(rowCurrent)
+        updateRowSizeTable(tableVlsm, 20)
         for methodeCurrent in range(len(methodes)):
             methode = methodes[methodeCurrent]
             ipInfo = getattr(subnet_work, methode)
             newItem = QTableWidgetItem(str(ipInfo))
             tableVlsm.setItem(rowCurrent, methodeCurrent, newItem)
         rowCurrent += 1
+
+
+def updateRowSizeTable(table, labelSize=0):
+    table.setFixedHeight(table.rowHeight(0) * table.rowCount() + labelSize)
+
+
+def tableNoResizeRow(table):
+    verticalHeader = table.verticalHeader()
+    verticalHeader.setSectionResizeMode(QHeaderView.Fixed)

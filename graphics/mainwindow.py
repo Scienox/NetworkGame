@@ -1,7 +1,8 @@
 from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout,
                                 QVBoxLayout, QGridLayout, QPushButton,
                                 QLineEdit, QStackedWidget, QTableWidget,
-                                QComboBox, QHeaderView, QLabel
+                                QComboBox, QHeaderView, QLabel, QSpacerItem,
+                                QSizePolicy
                                 )
 from PySide6.QtCore import Qt
 from .connect import *
@@ -21,11 +22,11 @@ class MainWindow(QMainWindow):
 
         self.__menuBar()
 
-
     def __buildCentralWidget(self):
         self.layoutCentralWidget = QVBoxLayout(self.centralWidget())
         self.homeButton = QPushButton(text="<-", parent=self.centralWidget())
 
+        self.spacerForTable = QSpacerItem(25, 25, QSizePolicy.Minimum, QSizePolicy.Expanding)
         self.stackedWidget = QStackedWidget(parent=self.centralWidget())
         self.homeButton.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(0))
         self.welcomePage = QWidget(parent=self.stackedWidget)
@@ -44,7 +45,7 @@ class MainWindow(QMainWindow):
         self.layoutCentralWidget.addWidget(self.homeButton)
         #self.layoutCentralWidget.addStretch(1)
         self.layoutCentralWidget.addWidget(self.stackedWidget)
-        #self.layoutCentralWidget.addStretch(30)
+        #self.layoutCentralWidget.addStretch(1)
 
     def __buildWelcomePage(self):
         self.layoutWelcomePageGrid = QGridLayout(self.welcomePage)
@@ -88,13 +89,16 @@ class MainWindow(QMainWindow):
         self.tableIpConfig.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableIpConfig.setColumnWidth(0, 200)
         self.tableIpConfig.horizontalHeader().setVisible(False)
+        updateRowSizeTable(self.tableIpConfig)
+        tableNoResizeRow(self.tableIpConfig)
 
         self.layoutIpConfigWidget.addWidget(self.labelIp, 0, 0, 1, 1)
         self.layoutIpConfigWidget.addWidget(self.lineEditIp, 0, 1, 1, 1)
         self.layoutIpConfigWidget.addWidget(self.comboboxSelectType, 0, 2, 1, 1)
         self.layoutIpConfigWidget.addWidget(self.lineEditNetworkLimite, 0, 3, 1, 1)
-        self.layoutIpConfigWidget.addWidget(self.pushButtonIp, 1, 0, 1, 4)
-        self.layoutIpConfigWidget.addWidget(self.tableIpConfig, 2, 0, 1, 4)
+        self.layoutIpConfigWidget.addWidget(self.pushButtonIp, 1, 0, 1, -1)
+        self.layoutIpConfigWidget.addWidget(self.tableIpConfig, 2, 0, 1, -1)
+        self.layoutIpConfigWidget.addItem(self.spacerForTable, 3, 0, 1, -1)
 
         self.pushButtonIp.clicked.connect(lambda: showIpConfig(self.lineEditIp.text(), self.comboboxSelectType.currentIndex(),
                                                                 self.lineEditNetworkLimite.text(), self.tableIpConfig))
@@ -121,6 +125,8 @@ class MainWindow(QMainWindow):
         self.tableIpBinary.setHorizontalHeaderLabels(columns)
         self.tableIpBinary.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableIpBinary.setColumnWidth(0, 200)
+        updateRowSizeTable(self.tableIpBinary, 20)
+        tableNoResizeRow(self.tableIpBinary)
 
         self.layoutIpBinary.addWidget(self.labelIpB, 0, 0, 1, 1)
         self.layoutIpBinary.addWidget(self.lineEditIpB, 0, 1, 1, 1)
@@ -128,6 +134,7 @@ class MainWindow(QMainWindow):
         self.layoutIpBinary.addWidget(self.lineEditNetworkLimiteB, 0, 3, 1, 1)
         self.layoutIpBinary.addWidget(self.pushButtonIpB, 1, 0, 1, 4)
         self.layoutIpBinary.addWidget(self.tableIpBinary, 2, 0, 1, 4)
+        self.layoutIpBinary.addItem(self.spacerForTable, 3, 0, 1, -1)
 
         self.pushButtonIpB.clicked.connect(lambda: showBinaryInfo(self.lineEditIpB.text(), self.comboboxSelectTypeB.currentIndex(),
                                                                   self.lineEditNetworkLimiteB.text(), self.tableIpBinary))
@@ -146,10 +153,8 @@ class MainWindow(QMainWindow):
         self.tableVlsmNetwork = QTableWidget(2, 0, parent=self.vlsmPage)
         self.tableVlsmNetwork.setVerticalHeaderLabels(["Nom du réseau", "Nombre d'hôtes"])
         self.tableVlsmNetwork.setHorizontalHeaderLabels([])
-        #self.tableVlsmNetwork.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
-        self.tableVlsmNetwork.setFixedHeight(
-            self.tableVlsmNetwork.rowHeight(0) * self.tableVlsmNetwork.rowCount() + 17
-        )
+        updateRowSizeTable(self.tableVlsmNetwork, 17)
+        tableNoResizeRow(self.tableVlsmNetwork)
         self.tableVlsmNetwork.setColumnWidth(0, 200)
         self.tableVlsmNetwork.horizontalHeader().setVisible(False)
         self.tableVlsmNetwork.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
@@ -167,6 +172,9 @@ class MainWindow(QMainWindow):
         self.tableVlsm.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableVlsm.setColumnWidth(0, 200)
         self.tableVlsm.verticalHeader().setVisible(False)
+        self.tableVlsm.setFixedHeight(
+            self.tableVlsm.rowHeight(0) * self.tableVlsm.rowCount() + 20
+        )
 
         self.layoutVlsm.addWidget(self.labelIpV, 0, 0, 1, 1)
         self.layoutVlsm.addWidget(self.lineEditIpV, 0, 1, 1, 1)
@@ -177,6 +185,7 @@ class MainWindow(QMainWindow):
         self.layoutVlsm.addWidget(self.pushButtonRemoveSubNetwork, 2, 3, 1, 1)
         self.layoutVlsm.addWidget(self.pushButtonIpV, 3, 0, 1, 4)
         self.layoutVlsm.addWidget(self.tableVlsm, 4, 0, 1, 4)
+        self.layoutVlsm.addItem(self.spacerForTable, 5, 0, 1, -1)
 
         self.pushButtonAddSubNetwork.clicked.connect(lambda: addNetwork(self.tableVlsmNetwork))
         self.pushButtonRemoveSubNetwork.clicked.connect(lambda: removeNetwork(self.tableVlsmNetwork))
@@ -202,25 +211,57 @@ class MainWindow(QMainWindow):
                 font-size: 14px;
             }
             QTableWidget {
-                border: default;
-                border-color: default;
+                border: none;
+                gridline-color: #1f4141;
+                color: black;
+                background-color: #898b8b;
+                selection-color: #acacac;
+                selection-background-color: #2e5f5f;
+            }
+            QHeaderView {
+                border-radius: 0px;
+                font-weight: normal;
+            }
+            QHeaderView:section {
+                border-color: #1f4141;
+                background-color: #21252c;
+            }
+            QScrollBar:horizontal {
+                background: #898b8b;
+                height: 15px;
+                border: 2px solid #1f4141;
+                border-radius: 0px;
+                margin: 0px, 0px, 0px, 0px;
+                border-bottom-left-radius: 5px;
+                border-bottom-right-radius: 5px;
+            }
+            QScrollBar:add-line:horizontal, QScrollBar:sub-line:horizontal {
+                width: 0px;
+                height: 0px;
+            }
+            QScrollBar:handle:horizontal {
+                background-color: #21252c;
+            }
+            QScrollBar:handle:horizontal:hover {
+                background-color: #2e333d;
             }
             QComboBox {
-                
+                combobox-popup: false;
+            }            
+            QComboBox QListView {
+                border: 2px solid #1f4141;
+            }
+            QComboBox:down-arrow {
+                image: url(graphics/icons/down-arrow.png);
+                width: 16px;
+                height: 16px;
             }
             QComboBox:drop-down {
                 border: none;
-                
-            }
-            QComboBox QListView {
-                border: none;
-                background-color: #2f3f3f;
-                margin-top: 0px;
-                outline: 0px;
             }
             QComboBox QListView:item {
-                border: 5px solid;
-                border-radius: 5px;
+                border: 1px ridge #1f4141;
+                border-radius: 0px;
             }
             QWidget {
                 
