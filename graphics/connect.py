@@ -137,7 +137,7 @@ def updateRowSizeTable(table, labelSize=0):
     if totalHeight <= avaibleHeight:
         table.setFixedHeight(totalHeight)
     else:
-        table.setMaximumHeight(avaibleHeight)
+        table.setFixedHeight(avaibleHeight)
 
 
 def tableNoResizeRow(table):

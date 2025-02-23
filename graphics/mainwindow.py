@@ -12,6 +12,7 @@ class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__(parent=None)
 
+        self.setMinimumSize(720, 600)
         self.setWindowTitle("Network tools")
 
         self.setCentralWidget(QWidget(parent=self))
@@ -171,8 +172,7 @@ class MainWindow(QMainWindow):
         self.tableVlsm.setColumnWidth(0, 200)
         self.tableVlsm.verticalHeader().setVisible(False)
         updateRowSizeTable(self.tableVlsm, 20)
-        print(self.centralWidget().height(), "lol")
-
+        
         self.layoutVlsm.addWidget(self.labelIpV, 0, 0, 1, 1)
         self.layoutVlsm.addWidget(self.lineEditIpV, 0, 1, 1, 1)
         self.layoutVlsm.addWidget(self.comboboxSelectTypeV, 0, 2, 1, 1)
@@ -274,3 +274,7 @@ class MainWindow(QMainWindow):
             }
             """
         self.setStyleSheet(stylesheet)
+
+    def resizeEvent(self, event):
+        updateRowSizeTable(self.tableVlsm)
+        return super().resizeEvent(event)
