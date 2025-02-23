@@ -162,19 +162,16 @@ class MainWindow(QMainWindow):
         self.pushButtonAddSubNetwork = QPushButton(self.vlsmPage, text="Ajouté un sous réseau")
         self.pushButtonRemoveSubNetwork = QPushButton(self.vlsmPage, text="Supprimé le sous réseau sélectionné")
 
-        rows = []
         columns = [
             "Nom", "Masque de sous réseau", "@Réseau", "Utilisateurs maximum", "CIDR"
         ]
-        self.tableVlsm = QTableWidget(len(rows), len(columns), parent=self.vlsmPage)
-        self.tableVlsm.setVerticalHeaderLabels(rows)
+        self.tableVlsm = QTableWidget(0, len(columns), parent=self.vlsmPage)
         self.tableVlsm.setHorizontalHeaderLabels(columns)
         self.tableVlsm.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableVlsm.setColumnWidth(0, 200)
         self.tableVlsm.verticalHeader().setVisible(False)
-        self.tableVlsm.setFixedHeight(
-            self.tableVlsm.rowHeight(0) * self.tableVlsm.rowCount() + 20
-        )
+        updateRowSizeTable(self.tableVlsm, 20)
+        print(self.centralWidget().height(), "lol")
 
         self.layoutVlsm.addWidget(self.labelIpV, 0, 0, 1, 1)
         self.layoutVlsm.addWidget(self.lineEditIpV, 0, 1, 1, 1)
@@ -231,7 +228,7 @@ class MainWindow(QMainWindow):
                 height: 15px;
                 border: 2px solid #1f4141;
                 border-radius: 0px;
-                margin: 0px, 0px, 0px, 0px;
+                margin: 0px;
                 border-bottom-left-radius: 5px;
                 border-bottom-right-radius: 5px;
             }

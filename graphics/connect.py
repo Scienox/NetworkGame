@@ -131,7 +131,13 @@ def makeVlsm(tableNetwork, tableVlsm, subDivisedNetwork, choiceDelimiter, delimi
 
 
 def updateRowSizeTable(table, labelSize=0):
-    table.setFixedHeight(table.rowHeight(0) * table.rowCount() + labelSize)
+    totalHeight = table.rowHeight(0) * table.rowCount() + labelSize
+    avaibleHeight = table.parent().height()
+
+    if totalHeight <= avaibleHeight:
+        table.setFixedHeight(totalHeight)
+    else:
+        table.setMaximumHeight(avaibleHeight)
 
 
 def tableNoResizeRow(table):
