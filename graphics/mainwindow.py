@@ -246,7 +246,7 @@ class MainWindow(QMainWindow):
                 background-color: #2e333d;
             }
             QComboBox {
-                combobox-popup: false;
+                combobox-popup: 0;
             }            
             QComboBox QListView {
                 border: 2px solid #1f4141;
