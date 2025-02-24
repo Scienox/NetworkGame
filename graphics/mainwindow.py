@@ -90,7 +90,7 @@ class MainWindow(QMainWindow):
         self.tableIpConfig.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableIpConfig.setColumnWidth(0, 200)
         self.tableIpConfig.horizontalHeader().setVisible(False)
-        updateRowSizeTable(self.tableIpConfig)
+        #updateRowSizeTable(self.tableIpConfig)
         tableNoResizeRow(self.tableIpConfig)
 
         self.layoutIpConfigWidget.addWidget(self.labelIp, 0, 0, 1, 1)
@@ -126,7 +126,7 @@ class MainWindow(QMainWindow):
         self.tableIpBinary.setHorizontalHeaderLabels(columns)
         self.tableIpBinary.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableIpBinary.setColumnWidth(0, 200)
-        updateRowSizeTable(self.tableIpBinary, 20)
+        #updateRowSizeTable(self.tableIpBinary, 20)
         tableNoResizeRow(self.tableIpBinary)
 
         self.layoutIpBinary.addWidget(self.labelIpB, 0, 0, 1, 1)
@@ -154,7 +154,7 @@ class MainWindow(QMainWindow):
         self.tableVlsmNetwork = QTableWidget(2, 0, parent=self.vlsmPage)
         self.tableVlsmNetwork.setVerticalHeaderLabels(["Nom du réseau", "Nombre d'hôtes"])
         self.tableVlsmNetwork.setHorizontalHeaderLabels([])
-        updateRowSizeTable(self.tableVlsmNetwork, 17)
+        #updateRowSizeTable(self.tableVlsmNetwork, 17)
         tableNoResizeRow(self.tableVlsmNetwork)
         self.tableVlsmNetwork.setColumnWidth(0, 200)
         self.tableVlsmNetwork.horizontalHeader().setVisible(False)
@@ -275,6 +275,11 @@ class MainWindow(QMainWindow):
             """
         self.setStyleSheet(stylesheet)
 
+
     def resizeEvent(self, event):
-        updateRowSizeTable(self.tableVlsm)
+        screenSize = self.centralWidget().height()
+        updateRowSizeTable(self.tableIpConfig, screenSize)
+        updateRowSizeTable(self.tableIpBinary, screenSize, 20)
+        updateRowSizeTable(self.tableVlsmNetwork, screenSize, 17)
+        updateRowSizeTable(self.tableVlsm, screenSize, 20)
         return super().resizeEvent(event)

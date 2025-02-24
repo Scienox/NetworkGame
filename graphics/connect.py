@@ -130,14 +130,18 @@ def makeVlsm(tableNetwork, tableVlsm, subDivisedNetwork, choiceDelimiter, delimi
         rowCurrent += 1
 
 
-def updateRowSizeTable(table, labelSize=0):
+def updateRowSizeTable(table, screenSize, labelSize=0):
+    screenSize = table.parent().parent().height()
     totalHeight = table.rowHeight(0) * table.rowCount() + labelSize
-    avaibleHeight = table.parent().height()
-
-    if totalHeight <= avaibleHeight:
-        table.setFixedHeight(totalHeight)
+    avaibleHeight = screenSize
+    if avaibleHeight <= totalHeight:
+        table.setMaximumHeight(avaibleHeight)
     else:
-        table.setFixedHeight(avaibleHeight)
+        table.setMaximumHeight(min(totalHeight, avaibleHeight + labelSize))
+
+
+def updateDynamiqueRowTable(table):
+    pass
 
 
 def tableNoResizeRow(table):
