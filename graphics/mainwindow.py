@@ -44,9 +44,7 @@ class MainWindow(QMainWindow):
         self.stackedWidget.addWidget(self.addresingPlanPage)
 
         self.layoutCentralWidget.addWidget(self.homeButton)
-        #self.layoutCentralWidget.addStretch(1)
         self.layoutCentralWidget.addWidget(self.stackedWidget)
-        #self.layoutCentralWidget.addStretch(1)
 
     def __buildWelcomePage(self):
         self.layoutWelcomePageGrid = QGridLayout(self.welcomePage)
@@ -90,7 +88,6 @@ class MainWindow(QMainWindow):
         self.tableIpConfig.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableIpConfig.setColumnWidth(0, 200)
         self.tableIpConfig.horizontalHeader().setVisible(False)
-        #updateRowSizeTable(self.tableIpConfig)
         tableNoResizeRow(self.tableIpConfig)
 
         self.layoutIpConfigWidget.addWidget(self.labelIp, 0, 0, 1, 1)
@@ -126,7 +123,6 @@ class MainWindow(QMainWindow):
         self.tableIpBinary.setHorizontalHeaderLabels(columns)
         self.tableIpBinary.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableIpBinary.setColumnWidth(0, 200)
-        #updateRowSizeTable(self.tableIpBinary, 20)
         tableNoResizeRow(self.tableIpBinary)
 
         self.layoutIpBinary.addWidget(self.labelIpB, 0, 0, 1, 1)
@@ -154,7 +150,6 @@ class MainWindow(QMainWindow):
         self.tableVlsmNetwork = QTableWidget(2, 0, parent=self.vlsmPage)
         self.tableVlsmNetwork.setVerticalHeaderLabels(["Nom du réseau", "Nombre d'hôtes"])
         self.tableVlsmNetwork.setHorizontalHeaderLabels([])
-        #updateRowSizeTable(self.tableVlsmNetwork, 17)
         tableNoResizeRow(self.tableVlsmNetwork)
         self.tableVlsmNetwork.setColumnWidth(0, 200)
         self.tableVlsmNetwork.horizontalHeader().setVisible(False)
@@ -171,7 +166,7 @@ class MainWindow(QMainWindow):
         self.tableVlsm.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableVlsm.setColumnWidth(0, 200)
         self.tableVlsm.verticalHeader().setVisible(False)
-        updateRowSizeTable(self.tableVlsm, 20)
+        updateRowSizeTable(self.tableVlsm)
         
         self.layoutVlsm.addWidget(self.labelIpV, 0, 0, 1, 1)
         self.layoutVlsm.addWidget(self.lineEditIpV, 0, 1, 1, 1)
@@ -277,9 +272,9 @@ class MainWindow(QMainWindow):
 
 
     def resizeEvent(self, event):
-        screenSize = self.centralWidget().height()
-        updateRowSizeTable(self.tableIpConfig, screenSize)
-        updateRowSizeTable(self.tableIpBinary, screenSize, 20)
-        updateRowSizeTable(self.tableVlsmNetwork, screenSize, 17)
-        updateRowSizeTable(self.tableVlsm, screenSize, 20)
+        updateRowSizeTable(self.tableIpConfig)
+        updateRowSizeTable(self.tableIpBinary)
+        updateRowSizeTable(self.tableVlsmNetwork)
+        updateRowSizeTable(self.tableVlsm)
+        print(self.tableVlsm.window().height())
         return super().resizeEvent(event)

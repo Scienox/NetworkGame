@@ -110,7 +110,7 @@ def readVlsm(vlsm):
 
 def makeVlsm(tableNetwork, tableVlsm, subDivisedNetwork, choiceDelimiter, delimiterNetwork):
     tableVlsm.setRowCount(0)
-    updateRowSizeTable(tableVlsm, 20)
+    updateRowSizeTable(tableVlsm)
     subNetwork = ","
     subNetwork = subNetwork.join(f"{name.text() if name != None else ''}:{numberHost.text()}" for name,
                                   numberHost in getNameNetwork(tableNetwork))
@@ -121,7 +121,7 @@ def makeVlsm(tableNetwork, tableVlsm, subDivisedNetwork, choiceDelimiter, delimi
 
     for subnet_work in readVlsm(vlsm):
         tableVlsm.insertRow(rowCurrent)
-        updateRowSizeTable(tableVlsm, 20)
+        updateRowSizeTable(tableVlsm)
         for methodeCurrent in range(len(methodes)):
             methode = methodes[methodeCurrent]
             ipInfo = getattr(subnet_work, methode)
@@ -130,18 +130,14 @@ def makeVlsm(tableNetwork, tableVlsm, subDivisedNetwork, choiceDelimiter, delimi
         rowCurrent += 1
 
 
-def updateRowSizeTable(table, screenSize, labelSize=0):
-    screenSize = table.parent().parent().height()
-    totalHeight = table.rowHeight(0) * table.rowCount() + labelSize
-    avaibleHeight = screenSize
+def updateRowSizeTable(table, labelSize=20):
+    screenSize = table.window().height()
+    totalHeight = (table.rowHeight(0) * table.rowCount()) + labelSize
+    avaibleHeight = screenSize - 220  # maybe top widget height
     if avaibleHeight <= totalHeight:
-        table.setMaximumHeight(avaibleHeight)
+        table.setFixedHeight(avaibleHeight)
     else:
-        table.setMaximumHeight(min(totalHeight, avaibleHeight + labelSize))
-
-
-def updateDynamiqueRowTable(table):
-    pass
+        table.setFixedHeight(min(totalHeight, avaibleHeight))
 
 
 def tableNoResizeRow(table):
