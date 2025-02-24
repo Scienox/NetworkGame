@@ -276,5 +276,4 @@ class MainWindow(QMainWindow):
         updateRowSizeTable(self.tableIpBinary)
         updateRowSizeTable(self.tableVlsmNetwork)
         updateRowSizeTable(self.tableVlsm)
-        print(self.tableVlsm.window().height())
         return super().resizeEvent(event)
