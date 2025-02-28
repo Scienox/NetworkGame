@@ -54,6 +54,15 @@ class IP:
             and (self.subMask == ip.subMask)
         else:
             return NotImplemented
+        
+    def __contains__(self, otherIp):
+        if isinstance(otherIp, IP):
+            if self.network == otherIp.network:
+                if self.subMask == otherIp.subMask:
+                    return True
+            return False
+        else:
+            return NotImplemented
 
     @property
     def cidr(self):

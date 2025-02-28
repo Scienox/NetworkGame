@@ -180,3 +180,32 @@ def updateRowSizeTable(table):
 def tableNoResizeRow(table):
     verticalHeader = table.verticalHeader()
     verticalHeader.setSectionResizeMode(QHeaderView.Fixed)
+
+
+def addAfterRowAddressingPlan(table):
+    row = table.rowCount()
+    table.insertRow(row)
+    updateRowSizeTable(table)
+
+
+def addBeforeRowAddressingPlan(table):
+    table.insertRow(0)
+    updateRowSizeTable(table)
+
+
+def addAfterTRowAddressingPlan(table):
+    currentRow = table.currentRow()
+    table.insertRow(currentRow + 1 if 0 < currentRow else 1)
+    updateRowSizeTable(table)
+
+
+def addBeforeTRowAddrerssingPLan(table):
+    currentRow = table.currentRow()
+    table.insertRow(currentRow)
+    updateRowSizeTable(table)
+
+
+def removeRowSelected(table):
+    currentRow = table.currentRow()
+    table.removeRow(currentRow)
+    updateRowSizeTable(table)

@@ -14,6 +14,7 @@ class MainWindow(QMainWindow):
 
         self.setMinimumSize(720, 600)
         self.setWindowTitle("Network tools")
+        self.comboBoxCidr = ["CIDR", "Masque de sous réseau", "Nombre d'utilisateur"]
 
         self.setCentralWidget(QWidget(parent=self))
 
@@ -167,7 +168,6 @@ class MainWindow(QMainWindow):
         self.tableVlsm.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableVlsm.setColumnWidth(0, 200)
         self.tableVlsm.verticalHeader().setVisible(False)
-        self.tableVlsm.setObjectName("vlsm")
 
         self.layoutVlsm.addWidget(self.labelIpV, 0, 0, 1, 1)
         self.layoutVlsm.addWidget(self.lineEditIpV, 0, 1, 1, 1)
@@ -188,7 +188,39 @@ class MainWindow(QMainWindow):
                                                             self.lineEditNetworkLimiteV.text()))
 
     def __buildAddressingPlan(self):
-        pass
+        self.layoutAddressingPLan = QGridLayout(self.addresingPlanPage)
+        self.addresingPlanPage.setLayout(self.layoutAddressingPLan)
+
+        self.pushButtonAddBeforeTarget = QPushButton(parent=self.addresingPlanPage, text="Ajouter une ligne avant la ligne sélectionnée")
+        self.pushButtonAddAfterTarget = QPushButton(parent=self.addresingPlanPage, text="Ajouter une ligne après la ligne sélectionnée")
+        self.pushButtonAddBefore = QPushButton(parent=self.addresingPlanPage, text="Ajouter une ligne au début")
+        self.pushButtonAddAfter = QPushButton(parent=self.addresingPlanPage, text="Ajouter une ligne à la fin")
+        self.pushButtonRemove = QPushButton(parent=self.addresingPlanPage, text="Supprimer la ligne sélectionnée")
+
+        columns = [
+            "Appareil", "Nom du réseau", "Interface",
+            "@Ip", "Masque de sous réseau", "@Reseau",
+            "Vlan", "Passerelle", "@Mac"
+        ]
+        self.tableAddressingPlan = QTableWidget(0, len(columns))
+        self.tableAddressingPlan.setHorizontalHeaderLabels(columns)
+        self.tableAddressingPlan.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
+        self.tableAddressingPlan.setColumnWidth(0, 200)
+        self.tableAddressingPlan.verticalHeader().setVisible(False)
+
+        self.layoutAddressingPLan.addWidget(self.pushButtonRemove, 0, 0, 1, -1)
+        self.layoutAddressingPLan.addWidget(self.pushButtonAddAfter, 1, 0, 1, 1)
+        self.layoutAddressingPLan.addWidget(self.pushButtonAddBefore, 1, 1, 1, 1)
+        self.layoutAddressingPLan.addWidget(self.pushButtonAddAfterTarget, 2, 0, 1, 1)
+        self.layoutAddressingPLan.addWidget(self.pushButtonAddBeforeTarget, 2, 1, 1, 1)
+        self.layoutAddressingPLan.addWidget(self.tableAddressingPlan, 4, 0, 1, -1)
+        self.layoutAddressingPLan.addItem(self.spacerForTable, 5, 0, 1, -1)
+
+        self.pushButtonRemove.clicked.connect(lambda: removeRowSelected(self.tableAddressingPlan))
+        self.pushButtonAddAfter.clicked.connect(lambda: addAfterRowAddressingPlan(self.tableAddressingPlan))
+        self.pushButtonAddBefore.clicked.connect(lambda: addBeforeRowAddressingPlan(self.tableAddressingPlan))
+        self.pushButtonAddAfterTarget.clicked.connect(lambda: addAfterTRowAddressingPlan(self.tableAddressingPlan))
+        self.pushButtonAddBeforeTarget.clicked.connect(lambda: addBeforeTRowAddrerssingPLan(self.tableAddressingPlan))
 
     def __menuBar(self):
         pass
@@ -275,6 +307,7 @@ class MainWindow(QMainWindow):
     def resizeEvent(self, event):
         updateRowSizeTable(self.tableIpConfig)
         updateRowSizeTable(self.tableIpBinary)
+        updateRowSizeTable(self.tableAddressingPlan)
         #updateRowSizeTable(self.tableVlsmNetwork)
         updateRowSizeTable(self.tableVlsm)
         return super().resizeEvent(event)
