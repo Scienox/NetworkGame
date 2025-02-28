@@ -1,7 +1,8 @@
 from ip_untils.ip import IP
 from ip_untils.vlsm import VLSM
 from ip_untils.helpfunction import cidrRequiermentForHost, cidrRequiermentForSubnetMask
-from PySide6.QtWidgets import QTableWidgetItem, QHeaderView
+from PySide6.QtWidgets import QTableWidgetItem, QHeaderView, QGridLayout, QSpacerItem
+from PySide6.QtCore import Qt
 
 
 def __selectChoiceCidr(choiceDelimiter, delimiterNetwork):
@@ -130,10 +131,46 @@ def makeVlsm(tableNetwork, tableVlsm, subDivisedNetwork, choiceDelimiter, delimi
         rowCurrent += 1
 
 
-def updateRowSizeTable(table, labelSize=20):
+def findLayout(widget, layoutType):
+    current = widget
+    while current is not None:
+        layout = current.layout()
+        if isinstance(layout, layoutType):
+            return layout
+        current = current.parentWidget()
+    return None
+
+
+def readGridLayout(layout):
+    for row in range(layout.rowCount()):
+        for column in range(layout.columnCount()):
+            yield layout.itemAtPosition(row, column)
+
+
+def readRowLayout(layout):
+    for row in range(layout.rowCount()):
+        yield layout.itemAtPosition(row, 0)
+
+
+def heightWithoutTarget(target, targetType):
+    height = 0
+    layout = findLayout(target, targetType)
+    for item in readRowLayout(layout):
+        if item is not None:
+            itemWidget = item.widget()
+            if itemWidget is not None and itemWidget != target:
+                height += itemWidget.height() + layout.spacing()
+            elif isinstance(item, QSpacerItem):
+                height += item.sizeHint().height() + layout.spacing()
+    return height
+
+
+def updateRowSizeTable(table):
+    horizontalHeader = table.horizontalHeader()
     screenSize = table.window().height()
-    totalHeight = (table.rowHeight(0) * table.rowCount()) + labelSize
-    avaibleHeight = screenSize - 220  # maybe top widget height
+    overSize = (20 if not horizontalHeader.isHidden() else 0) + (table.horizontalScrollBar().height() if table.horizontalScrollBarPolicy() == Qt.ScrollBarAlwaysOn else 0)
+    totalHeight = (table.rowHeight(0) * table.rowCount()) + overSize
+    avaibleHeight = screenSize - heightWithoutTarget(table, QGridLayout) - overSize
     if avaibleHeight <= totalHeight:
         table.setFixedHeight(avaibleHeight)
     else:

@@ -149,9 +149,10 @@ class MainWindow(QMainWindow):
 
         self.tableVlsmNetwork = QTableWidget(2, 0, parent=self.vlsmPage)
         self.tableVlsmNetwork.setVerticalHeaderLabels(["Nom du réseau", "Nombre d'hôtes"])
-        self.tableVlsmNetwork.setHorizontalHeaderLabels([])
+        updateRowSizeTable(self.tableVlsmNetwork)
         tableNoResizeRow(self.tableVlsmNetwork)
         self.tableVlsmNetwork.setColumnWidth(0, 200)
+        updateRowSizeTable(self.tableVlsmNetwork)
         self.tableVlsmNetwork.horizontalHeader().setVisible(False)
         self.tableVlsmNetwork.setVerticalScrollBarPolicy(Qt.ScrollBarAlwaysOff)
         self.tableVlsmNetwork.setHorizontalScrollBarPolicy(Qt.ScrollBarAlwaysOn)
@@ -166,8 +167,8 @@ class MainWindow(QMainWindow):
         self.tableVlsm.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableVlsm.setColumnWidth(0, 200)
         self.tableVlsm.verticalHeader().setVisible(False)
-        updateRowSizeTable(self.tableVlsm)
-        
+        self.tableVlsm.setObjectName("vlsm")
+
         self.layoutVlsm.addWidget(self.labelIpV, 0, 0, 1, 1)
         self.layoutVlsm.addWidget(self.lineEditIpV, 0, 1, 1, 1)
         self.layoutVlsm.addWidget(self.comboboxSelectTypeV, 0, 2, 1, 1)
@@ -274,6 +275,6 @@ class MainWindow(QMainWindow):
     def resizeEvent(self, event):
         updateRowSizeTable(self.tableIpConfig)
         updateRowSizeTable(self.tableIpBinary)
-        updateRowSizeTable(self.tableVlsmNetwork)
+        #updateRowSizeTable(self.tableVlsmNetwork)
         updateRowSizeTable(self.tableVlsm)
         return super().resizeEvent(event)
