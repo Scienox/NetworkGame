@@ -197,6 +197,12 @@ class MainWindow(QMainWindow):
         self.pushButtonAddAfter = QPushButton(parent=self.addresingPlanPage, text="Ajouter une ligne à la fin")
         self.pushButtonRemove = QPushButton(parent=self.addresingPlanPage, text="Supprimer la ligne sélectionnée")
 
+        self.layoutImportVlsm = QGridLayout(parent=self.addresingPlanPage)
+        self.labelImportVlsm = QLabel(parent=self.addresingPlanPage, text="Importer depuis")
+        self.comboBoxImportVlsm = QComboBox(parent=self.addresingPlanPage)
+        self.comboBoxImportVlsm.addItems(["VLSM"])
+        self.pushButtonImportVlsm = QPushButton(parent=self.addresingPlanPage, text="Importer")
+
         columns = [
             "Appareil", "Nom du réseau", "Interface",
             "@Ip", "Masque de sous réseau", "@Reseau",
@@ -213,8 +219,13 @@ class MainWindow(QMainWindow):
         self.layoutAddressingPLan.addWidget(self.pushButtonAddBefore, 1, 1, 1, 1)
         self.layoutAddressingPLan.addWidget(self.pushButtonAddAfterTarget, 2, 0, 1, 1)
         self.layoutAddressingPLan.addWidget(self.pushButtonAddBeforeTarget, 2, 1, 1, 1)
+        self.layoutAddressingPLan.addLayout(self.layoutImportVlsm, 3, 0, 1, 1)
+        self.layoutAddressingPLan.addWidget(self.pushButtonImportVlsm, 3, 1, 1, 1)
         self.layoutAddressingPLan.addWidget(self.tableAddressingPlan, 4, 0, 1, -1)
         self.layoutAddressingPLan.addItem(self.spacerForTable, 5, 0, 1, -1)
+
+        self.layoutImportVlsm.addWidget(self.labelImportVlsm, 0, 0)
+        self.layoutImportVlsm.addWidget(self.comboBoxImportVlsm, 0, 1)
 
         self.pushButtonRemove.clicked.connect(lambda: removeRowSelected(self.tableAddressingPlan))
         self.pushButtonAddAfter.clicked.connect(lambda: addAfterRowAddressingPlan(self.tableAddressingPlan))

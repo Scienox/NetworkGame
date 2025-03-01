@@ -156,7 +156,9 @@ def heightWithoutTarget(target, targetType):
     height = 0
     layout = findLayout(target, targetType)
     for item in readRowLayout(layout):
-        if item is not None:
+        if isinstance(item, targetType):
+            height += heightWithoutTarget(item, targetType) + layout.spacing()
+        elif item is not None:
             itemWidget = item.widget()
             if itemWidget is not None and itemWidget != target:
                 height += itemWidget.height() + layout.spacing()
