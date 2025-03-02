@@ -211,3 +211,27 @@ def removeRowSelected(table):
     currentRow = table.currentRow()
     table.removeRow(currentRow)
     updateRowSizeTable(table)
+
+
+def importVlsm(table, tableVlsm):
+    table.setRowCount(0)
+    rowCurrent = 0
+    for row in range(tableVlsm.rowCount()):
+        key = {f"{tableVlsm.horizontalHeaderItem(subNetwork).text()}": f"{tableVlsm.item(row, subNetwork).text()}" for subNetwork in range(tableVlsm.columnCount())}
+        name, subnetMask, network = key['Nom'], key['Masque de sous réseau'], key['@Réseau']
+        table.insertRow(rowCurrent)
+        updateRowSizeTable(table)
+        newItemName = QTableWidgetItem(name)
+        newItemSubnetMask = QTableWidgetItem(subnetMask)
+        newItemNetwork = QTableWidgetItem(network)
+
+        table.setItem(rowCurrent, 1, newItemName)
+        table.setItem(rowCurrent, 4, newItemSubnetMask)
+        table.setItem(rowCurrent, 5, newItemNetwork)
+
+    rowCurrent += 1
+
+
+def toImport(table, choiceImport, importThis):
+    if choiceImport == 0:
+        importVlsm(table, importThis)

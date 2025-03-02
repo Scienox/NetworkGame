@@ -199,9 +199,9 @@ class MainWindow(QMainWindow):
 
         self.layoutImportVlsm = QGridLayout(parent=self.addresingPlanPage)
         self.labelImportVlsm = QLabel(parent=self.addresingPlanPage, text="Importer depuis")
-        self.comboBoxImportVlsm = QComboBox(parent=self.addresingPlanPage)
-        self.comboBoxImportVlsm.addItems(["VLSM"])
-        self.pushButtonImportVlsm = QPushButton(parent=self.addresingPlanPage, text="Importer")
+        self.comboBoxImport = QComboBox(parent=self.addresingPlanPage)
+        self.comboBoxImport.addItems(["VLSM"])
+        self.pushButtonImport = QPushButton(parent=self.addresingPlanPage, text="Importer")
 
         columns = [
             "Appareil", "Nom du réseau", "Interface",
@@ -220,18 +220,19 @@ class MainWindow(QMainWindow):
         self.layoutAddressingPLan.addWidget(self.pushButtonAddAfterTarget, 2, 0, 1, 1)
         self.layoutAddressingPLan.addWidget(self.pushButtonAddBeforeTarget, 2, 1, 1, 1)
         self.layoutAddressingPLan.addLayout(self.layoutImportVlsm, 3, 0, 1, 1)
-        self.layoutAddressingPLan.addWidget(self.pushButtonImportVlsm, 3, 1, 1, 1)
+        self.layoutAddressingPLan.addWidget(self.pushButtonImport, 3, 1, 1, 1)
         self.layoutAddressingPLan.addWidget(self.tableAddressingPlan, 4, 0, 1, -1)
         self.layoutAddressingPLan.addItem(self.spacerForTable, 5, 0, 1, -1)
 
         self.layoutImportVlsm.addWidget(self.labelImportVlsm, 0, 0)
-        self.layoutImportVlsm.addWidget(self.comboBoxImportVlsm, 0, 1)
+        self.layoutImportVlsm.addWidget(self.comboBoxImport, 0, 1)
 
         self.pushButtonRemove.clicked.connect(lambda: removeRowSelected(self.tableAddressingPlan))
         self.pushButtonAddAfter.clicked.connect(lambda: addAfterRowAddressingPlan(self.tableAddressingPlan))
         self.pushButtonAddBefore.clicked.connect(lambda: addBeforeRowAddressingPlan(self.tableAddressingPlan))
         self.pushButtonAddAfterTarget.clicked.connect(lambda: addAfterTRowAddressingPlan(self.tableAddressingPlan))
         self.pushButtonAddBeforeTarget.clicked.connect(lambda: addBeforeTRowAddrerssingPLan(self.tableAddressingPlan))
+        self.pushButtonImport.clicked.connect(lambda: toImport(self.tableAddressingPlan, self.comboBoxImport.currentIndex(), self.tableVlsm))
 
     def __menuBar(self):
         pass
