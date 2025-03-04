@@ -1,8 +1,9 @@
 from ip_untils.ip import IP
 from ip_untils.vlsm import VLSM
 from ip_untils.helpfunction import cidrRequiermentForHost, cidrRequiermentForSubnetMask
-from PySide6.QtWidgets import QTableWidgetItem, QHeaderView, QGridLayout, QSpacerItem
+from PySide6.QtWidgets import QTableWidgetItem, QHeaderView, QGridLayout, QSpacerItem, QFileDialog
 from PySide6.QtCore import Qt
+import openpyxl
 
 
 def __selectChoiceCidr(choiceDelimiter, delimiterNetwork):
@@ -232,6 +233,65 @@ def importVlsm(table, tableVlsm):
     rowCurrent += 1
 
 
+def readFile(_file):
+    with open(_file, "r", -1, "utf-8") as file:
+        for line in file.readlines():
+            yield line.split(',')
+    file.close()
+
+
+def importCSV(table):
+    window = table.window()
+    fileDialog = QFileDialog(window)
+    file, _ = fileDialog.getOpenFileName(window, "Sélectionner un fichier", "", "Fichier CSV (*csv)")
+    table.setRowCount(0)
+    lines = [line for line in readFile(file)]
+    lines.pop(0)
+    drawAdressingPlan(table, lines)
+
+
+def readExcel(file):
+    workbook = openpyxl.load_workbook(file)
+
+    sheet = workbook.active
+    lines = list()
+    for row in range(1, sheet.max_row+1):
+        element = sheet.cell(row, 1).value
+        if (element is not None):
+            line = list()
+            for column in range(9*2):
+                if column % 2 == 0:
+                    cell = sheet.cell(row, column+1).value
+                    line.append(str(cell).strip() if cell is not None else '')
+            lines.append(line)
+    return lines
+
+
+def importExcel(table):
+    window = table.window()
+    fileDialog = QFileDialog(window)
+    file, _ = fileDialog.getOpenFileName(window, "Sélectionner un fichier", "", "Fichier Excel (*xlsx)")
+    table.setRowCount(0)
+    lines = readExcel(file)
+    lines.pop(0)
+    drawAdressingPlan(table, lines)
+        
+    
+def drawAdressingPlan(table, lines):
+    for row in range(len(lines)):
+        table.insertRow(row)
+        line = lines[row]
+        for column in range(len(line)):
+            element = line[column]
+            newItem = QTableWidgetItem(element)
+            table.setItem(row, column, newItem)
+    updateRowSizeTable(table)
+
+
 def toImport(table, choiceImport, importThis):
     if choiceImport == 0:
         importVlsm(table, importThis)
+    elif choiceImport == 1:
+        importCSV(table)
+    elif choiceImport == 2:
+        importExcel(table)

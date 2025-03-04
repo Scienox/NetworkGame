@@ -200,7 +200,7 @@ class MainWindow(QMainWindow):
         self.layoutImportVlsm = QGridLayout(parent=self.addresingPlanPage)
         self.labelImportVlsm = QLabel(parent=self.addresingPlanPage, text="Importer depuis")
         self.comboBoxImport = QComboBox(parent=self.addresingPlanPage)
-        self.comboBoxImport.addItems(["VLSM"])
+        self.comboBoxImport.addItems(["VLSM", "CSV", "Excel"])
         self.pushButtonImport = QPushButton(parent=self.addresingPlanPage, text="Importer")
 
         columns = [
