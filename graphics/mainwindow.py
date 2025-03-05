@@ -35,14 +35,14 @@ class MainWindow(QMainWindow):
         self.IpConfigPage = QWidget(parent=self.stackedWidget)
         self.ipBinaryPage = QWidget(parent=self.stackedWidget)
         self.vlsmPage = QWidget(parent=self.stackedWidget)
-        self.addresingPlanPage = QWidget(parent=self.stackedWidget)
+        self.addressingPlanPage = QWidget(parent=self.stackedWidget)
         self.__buildWelcomePage()
 
         self.stackedWidget.addWidget(self.welcomePage)
         self.stackedWidget.addWidget(self.IpConfigPage)
         self.stackedWidget.addWidget(self.ipBinaryPage)
         self.stackedWidget.addWidget(self.vlsmPage)
-        self.stackedWidget.addWidget(self.addresingPlanPage)
+        self.stackedWidget.addWidget(self.addressingPlanPage)
 
         self.layoutCentralWidget.addWidget(self.homeButton)
         self.layoutCentralWidget.addWidget(self.stackedWidget)
@@ -188,20 +188,21 @@ class MainWindow(QMainWindow):
                                                             self.lineEditNetworkLimiteV.text()))
 
     def __buildAddressingPlan(self):
-        self.layoutAddressingPLan = QGridLayout(self.addresingPlanPage)
-        self.addresingPlanPage.setLayout(self.layoutAddressingPLan)
+        self.layoutAddressingPLan = QGridLayout(self.addressingPlanPage)
+        self.addressingPlanPage.setLayout(self.layoutAddressingPLan)
 
-        self.pushButtonAddBeforeTarget = QPushButton(parent=self.addresingPlanPage, text="Ajouter une ligne avant la ligne sélectionnée")
-        self.pushButtonAddAfterTarget = QPushButton(parent=self.addresingPlanPage, text="Ajouter une ligne après la ligne sélectionnée")
-        self.pushButtonAddBefore = QPushButton(parent=self.addresingPlanPage, text="Ajouter une ligne au début")
-        self.pushButtonAddAfter = QPushButton(parent=self.addresingPlanPage, text="Ajouter une ligne à la fin")
-        self.pushButtonRemove = QPushButton(parent=self.addresingPlanPage, text="Supprimer la ligne sélectionnée")
+        self.pushButtonAddBeforeTarget = QPushButton(parent=self.addressingPlanPage, text="Ajouter une ligne avant la ligne sélectionnée")
+        self.pushButtonAddAfterTarget = QPushButton(parent=self.addressingPlanPage, text="Ajouter une ligne après la ligne sélectionnée")
+        self.pushButtonAddBefore = QPushButton(parent=self.addressingPlanPage, text="Ajouter une ligne au début")
+        self.pushButtonAddAfter = QPushButton(parent=self.addressingPlanPage, text="Ajouter une ligne à la fin")
+        self.pushButtonRemove = QPushButton(parent=self.addressingPlanPage, text="Supprimer la ligne sélectionnée")
 
-        self.layoutImportVlsm = QGridLayout(parent=self.addresingPlanPage)
-        self.labelImportVlsm = QLabel(parent=self.addresingPlanPage, text="Importer depuis")
-        self.comboBoxImport = QComboBox(parent=self.addresingPlanPage)
+        self.layoutImportVlsm = QGridLayout(parent=self.addressingPlanPage)
+        self.labelImportVlsm = QLabel(parent=self.addressingPlanPage, text="Importer depuis")
+        self.comboBoxImport = QComboBox(parent=self.addressingPlanPage)
         self.comboBoxImport.addItems(["VLSM", "CSV", "Excel"])
-        self.pushButtonImport = QPushButton(parent=self.addresingPlanPage, text="Importer")
+        self.pushButtonImport = QPushButton(parent=self.addressingPlanPage, text="Importer")
+        self.pushButtonExport = QPushButton(parent=self.addressingPlanPage, text="Exporter")
 
         columns = [
             "Appareil", "Nom du réseau", "Interface",
@@ -223,6 +224,7 @@ class MainWindow(QMainWindow):
         self.layoutAddressingPLan.addWidget(self.pushButtonImport, 3, 1, 1, 1)
         self.layoutAddressingPLan.addWidget(self.tableAddressingPlan, 4, 0, 1, -1)
         self.layoutAddressingPLan.addItem(self.spacerForTable, 5, 0, 1, -1)
+        self.layoutAddressingPLan.addWidget(self.pushButtonExport, 6, 0, 1, -1)
 
         self.layoutImportVlsm.addWidget(self.labelImportVlsm, 0, 0)
         self.layoutImportVlsm.addWidget(self.comboBoxImport, 0, 1)
@@ -233,6 +235,7 @@ class MainWindow(QMainWindow):
         self.pushButtonAddAfterTarget.clicked.connect(lambda: addAfterTRowAddressingPlan(self.tableAddressingPlan))
         self.pushButtonAddBeforeTarget.clicked.connect(lambda: addBeforeTRowAddrerssingPLan(self.tableAddressingPlan))
         self.pushButtonImport.clicked.connect(lambda: toImport(self.tableAddressingPlan, self.comboBoxImport.currentIndex(), self.tableVlsm))
+        self.pushButtonExport.clicked.connect(lambda: toExport(self.tableAddressingPlan, columns))
 
     def __menuBar(self):
         pass

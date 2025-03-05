@@ -1,7 +1,7 @@
 from ip_untils.ip import IP
 from ip_untils.vlsm import VLSM
 from ip_untils.helpfunction import cidrRequiermentForHost, cidrRequiermentForSubnetMask
-from PySide6.QtWidgets import QTableWidgetItem, QHeaderView, QGridLayout, QSpacerItem, QFileDialog
+from PySide6.QtWidgets import QTableWidgetItem, QHeaderView, QGridLayout, QSpacerItem, QFileDialog, QMessageBox
 from PySide6.QtCore import Qt
 import openpyxl
 
@@ -88,14 +88,7 @@ def readTable(table):
     rows = table.rowCount()
     columns = table.columnCount()
     for row in range(rows):
-        for column in range(columns):
-            yield table.item(row, column)
-
-
-def readColumnTable(table, row):
-    columns = table.columnCount()
-    for column in range(columns):
-        yield table.item(row, column)
+        yield [table.item(row, column).text() for column in range(columns)]
 
 
 def getNameNetwork(table):
@@ -234,7 +227,7 @@ def importVlsm(table, tableVlsm):
 
 
 def readFile(_file):
-    with open(_file, "r", -1, "utf-8") as file:
+    with open(_file, "r", -1, encoding="utf-8") as file:
         for line in file.readlines():
             yield line.split(',')
     file.close()
@@ -245,9 +238,12 @@ def importCSV(table):
     fileDialog = QFileDialog(window)
     file, _ = fileDialog.getOpenFileName(window, "Sélectionner un fichier", "", "Fichier CSV (*csv)")
     table.setRowCount(0)
-    lines = [line for line in readFile(file)]
-    lines.pop(0)
-    drawAdressingPlan(table, lines)
+    if file:
+        lines = [line for line in readFile(file)]
+        lines.pop(0)
+        drawAdressingPlan(table, lines)
+    else:
+        updateRowSizeTable(table)
 
 
 def readExcel(file):
@@ -272,9 +268,12 @@ def importExcel(table):
     fileDialog = QFileDialog(window)
     file, _ = fileDialog.getOpenFileName(window, "Sélectionner un fichier", "", "Fichier Excel (*xlsx)")
     table.setRowCount(0)
-    lines = readExcel(file)
-    lines.pop(0)
-    drawAdressingPlan(table, lines)
+    if file:
+        lines = readExcel(file)
+        lines.pop(0)
+        drawAdressingPlan(table, lines)
+    else:
+        updateRowSizeTable(table)
         
     
 def drawAdressingPlan(table, lines):
@@ -295,3 +294,42 @@ def toImport(table, choiceImport, importThis):
         importCSV(table)
     elif choiceImport == 2:
         importExcel(table)
+
+
+def generateCsv(window, text):
+
+    dialogFile = QFileDialog(window)
+    newFile, _ = dialogFile.getSaveFileName(window, "Créer ou écraser un fichier CSV", "", "Fichier (*csv)")
+    if newFile:
+        with open(newFile+(".csv" if not newFile.endswith(".csv") else ''), "w", encoding="utf-8") as file:
+            file.writelines(text)
+        file.close()
+
+
+def exportToCsv(table, horizontalHeader):
+    lines = [line for line in readTable(table)]
+    lines.insert(0, horizontalHeader)
+    text = ""
+    for line in lines:
+        text += (",".join(element for element in line)) + "\n"
+    generateCsv(table.window(), text)
+
+
+def exportToExcel():
+    print("Excel")
+
+
+def toExport(table, horizontalHeader):
+    window = table.window()
+    dialog = QMessageBox(window)
+    dialog.setText("Exporter en tant que:")
+    csvRole = dialog.addButton("CSV", QMessageBox.ActionRole)
+    excelRole = dialog.addButton("Excel", QMessageBox.ActionRole)
+    dialog.addButton("Annuler", QMessageBox.ActionRole)
+    dialog.exec()
+
+    response = dialog.clickedButton()
+    if response == csvRole:
+        exportToCsv(table, horizontalHeader)
+    elif response == excelRole:
+        exportToExcel()
