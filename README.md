@@ -24,7 +24,16 @@ Outil de réseau graphique:
             de sous réseau, @Reseau, nombres d'hôtes possible, CIDR]
 
     Génération de plan d'adressage:
-        à venir
+        1) Plan d'adressage éditable via l'interface
+        2) Ajouter une nouvelle ligne à la fin du plan
+        3) Ajouter une ligne juste après la ligne sélectionnée
+        4) Ajouter une nouvelle ligne au début du plan
+        5) Ajouter une ligne avant celle sélectionnée
+        6) Supprimer la ligne sélectionnée
+        7) Importer le sous réseautage généré par VLSM
+        8) Importer un fichier CSV (*csv) ou Excel (*xlxs)
+        9) Exporter ou écraser le plan d'adressage vers un fichier CSV (*csv) ou Excel (*xlxs)
+            exportation vers fichier excel non implémenté
 
     Jeux/Entraînement:
         À venir
