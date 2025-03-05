@@ -236,7 +236,7 @@ def importVlsm(table, tableVlsm):
 def readFile(_file):
     with open(_file, "r", -1, encoding="utf-8") as file:
         for line in file.readlines():
-            yield line.split(',')
+            yield line.strip().split(',')
     file.close()
 
 
