@@ -88,7 +88,14 @@ def readTable(table):
     rows = table.rowCount()
     columns = table.columnCount()
     for row in range(rows):
-        yield [table.item(row, column).text() for column in range(columns)]
+        line = list()
+        for column in range(columns):
+            item = table.item(row, column)
+            if item:
+                line.append(item.text())
+            else:
+                line.append('')
+        yield line
 
 
 def getNameNetwork(table):
