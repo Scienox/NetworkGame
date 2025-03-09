@@ -4,36 +4,94 @@ from ip_untils.helpfunction import cidrRequiermentForHost, cidrRequiermentForSub
 from PySide6.QtWidgets import QTableWidgetItem, QHeaderView, QGridLayout, QSpacerItem, QFileDialog, QMessageBox
 from PySide6.QtCore import Qt
 from openpyxl import Workbook, load_workbook
+from .errorMessage import *
+
+
+class __Error:
+    def __init__(self):
+        self._status = False
+
+    def __bool__(self):
+        return self.status
+    
+    def __str__(self):
+        return f"{self.status}"
+
+    @property
+    def true(self):
+        self._status = True
+
+    def false(self):
+        self._status = False
+
+    @property
+    def status(self):
+        return self._status
+
+
+class __ActionMessage(QMessageBox):
+    def __init__(self, window, message):
+        super().__init__(window)
+        self.setText(message)
+        self.yes = self.addButton("Oui", QMessageBox.ActionRole)
+        self.no = self.addButton("Non", QMessageBox.ActionRole)
+
+        self.exec()
+
+    def __bool__(self):
+        if self.clickedButton() == self.yes:
+            return True
+        elif self.clickedButton() == self.no:
+            return False
+
+
+def errMessage(window, text):
+    dialog = QMessageBox(window)
+    dialog.setText(text)
+    dialog.addButton("Ok", QMessageBox.ActionRole)
+    dialog.exec()
 
 
 def __selectChoiceCidr(choiceDelimiter, delimiterNetwork):
     cidr = None
-    if choiceDelimiter == 0:
-        cidr = int(delimiterNetwork)
-    elif choiceDelimiter == 1:
-        cidr = cidrRequiermentForSubnetMask(delimiterNetwork)
-    elif choiceDelimiter == 2:
-        delimiterTmp = int(delimiterNetwork)
-        cidr = cidrRequiermentForHost(delimiterTmp)
-    return cidr
+    try:
+        if choiceDelimiter == 0:
+            cidr = int(delimiterNetwork)
+        elif choiceDelimiter == 1:
+            cidr = cidrRequiermentForSubnetMask(delimiterNetwork)
+        elif choiceDelimiter == 2:
+            delimiterTmp = int(delimiterNetwork)
+            cidr = cidrRequiermentForHost(delimiterTmp)
+        return cidr
+    except Exception as e:
+        raise ValueError(e)
 
 
 def showIpConfig(ip, choiceDelimiter, delimiterNetwork, table):
-    cidr = __selectChoiceCidr(choiceDelimiter, delimiterNetwork)
+    window = table.window()
+    error = __Error()
+    try:
+        cidr = __selectChoiceCidr(choiceDelimiter, delimiterNetwork)
+    except Exception as e:
+        error.true
+        errMessage(window, errSelectCidr(str(e)))
+    if not error:
+        try:
+            IpTmp = IP(ip, cidr)
 
-    IpTmp = IP(ip, cidr)
-
-    methodes = [
-        "type", "classIP", "reservation",
-        "network", "subMask", "cidr",
-        "ipHost", "firstHost", "lastHost",
-        "broadcast", "totalHost"
-        ]
-    for row in range(0, len(methodes)):
-        methode = methodes[row]
-        targetMethode = getattr(IpTmp, methode)
-        element = QTableWidgetItem(str(targetMethode))
-        table.setItem(row, 0, element)
+            methodes = [
+                "type", "classIP", "reservation",
+                "network", "subMask", "cidr",
+                "ipHost", "firstHost", "lastHost",
+                "broadcast", "totalHost"
+                ]
+            for row in range(0, len(methodes)):
+                methode = methodes[row]
+                targetMethode = getattr(IpTmp, methode)
+                element = QTableWidgetItem(str(targetMethode))
+                table.setItem(row, 0, element)
+        except Exception as e:
+            errMessage(table.window(), errIp(str(e)))
 
 
 def detectHostPart(adressBinary, cidr):
@@ -52,25 +110,35 @@ def detectHostPart(adressBinary, cidr):
 
 
 def showBinaryInfo(ip, choiceDelimiter, delimiterNetwork, table):
-    cidr = __selectChoiceCidr(choiceDelimiter, delimiterNetwork)
+    window = table.window()
+    error = __Error()
+    try:
+        cidr = __selectChoiceCidr(choiceDelimiter, delimiterNetwork)
+    except Exception as e:
+        error.true
+        errMessage(window, errSelectCidr(str(e)))
 
-    IpTmp = IP(ip, cidr)
+    if not error:
+        try:
+            IpTmp = IP(ip, cidr)
 
-    rowsMethodes = [
-        "subMask", "network", "ipHost",
-        "firstHost", "lastHost", "broadcast"
-    ]
-    for row in range(0, len(rowsMethodes)):
-        methode = rowsMethodes[row]
-        targetMethode = getattr(IpTmp, methode)
-        targetMethodeB = getattr(IpTmp, methode + "Binary")
-        element = QTableWidgetItem(str(targetMethode))
-        table.setItem(row, 0, element)
-        netPart, hostPart = detectHostPart(targetMethodeB, cidr)
-        elementNetPart = QTableWidgetItem(netPart)
-        elementHostPart = QTableWidgetItem(hostPart)
-        table.setItem(row, 1, elementNetPart)
-        table.setItem(row, 2, elementHostPart)
+            rowsMethodes = [
+                "subMask", "network", "ipHost",
+                "firstHost", "lastHost", "broadcast"
+            ]
+            for row in range(0, len(rowsMethodes)):
+                methode = rowsMethodes[row]
+                targetMethode = getattr(IpTmp, methode)
+                targetMethodeB = getattr(IpTmp, methode + "Binary")
+                element = QTableWidgetItem(str(targetMethode))
+                table.setItem(row, 0, element)
+                netPart, hostPart = detectHostPart(targetMethodeB, cidr)
+                elementNetPart = QTableWidgetItem(netPart)
+                elementHostPart = QTableWidgetItem(hostPart)
+                table.setItem(row, 1, elementNetPart)
+                table.setItem(row, 2, elementHostPart)
+        except Exception as e:
+            errMessage(window, errIp(str(e)))
 
 
 def addNetwork(table):
@@ -100,9 +168,12 @@ def readTable(table):
 
 def getNameNetwork(table):
     columns = table.columnCount()
-    for column in range(columns):
-        name, numberHost = table.item(0, column), table.item(1, column)
-        yield name, numberHost
+    if columns > 0:
+        for column in range(columns):
+            name, numberHost = table.item(0, column), table.item(1, column)
+            yield name, numberHost
+    else:
+        raise ValueError("Network not created")
 
 
 def readVlsm(vlsm):
@@ -111,25 +182,40 @@ def readVlsm(vlsm):
 
 
 def makeVlsm(tableNetwork, tableVlsm, subDivisedNetwork, choiceDelimiter, delimiterNetwork):
+    window = tableNetwork.window()
+    error = __Error()
     tableVlsm.setRowCount(0)
-    updateRowSizeTable(tableVlsm)
     subNetwork = ","
-    subNetwork = subNetwork.join(f"{name.text() if name != None else ''}:{numberHost.text()}" for name,
-                                  numberHost in getNameNetwork(tableNetwork))
-    cidr = __selectChoiceCidr(choiceDelimiter, delimiterNetwork)
-    vlsm = VLSM(subDivisedNetwork, cidr, subNetwork)
-    rowCurrent = tableVlsm.rowCount()
-    methodes = ["name", "subMask", "network", "totalHost", "cidr"]
+    try:
+        subNetwork = subNetwork.join(f"{name.text() if name != None else ''}:{numberHost.text()}" for name,
+                                    numberHost in getNameNetwork(tableNetwork))
+    except Exception as e:
+        error.true
+        errMessage(window, errSubnet(str(e)))
+    if not error:
+        try:
+            cidr = __selectChoiceCidr(choiceDelimiter, delimiterNetwork)
+        except Exception as e:
+            error.true
+            errMessage(window, errSelectCidr(str(e)))
+    if not error:
+        try:
+            vlsm = VLSM(subDivisedNetwork, cidr, subNetwork)
+            rowCurrent = tableVlsm.rowCount()
+            methodes = ["name", "subMask", "network", "totalHost", "cidr"]
 
-    for subnet_work in readVlsm(vlsm):
-        tableVlsm.insertRow(rowCurrent)
-        updateRowSizeTable(tableVlsm)
-        for methodeCurrent in range(len(methodes)):
-            methode = methodes[methodeCurrent]
-            ipInfo = getattr(subnet_work, methode)
-            newItem = QTableWidgetItem(str(ipInfo))
-            tableVlsm.setItem(rowCurrent, methodeCurrent, newItem)
-        rowCurrent += 1
+            for subnet_work in readVlsm(vlsm):
+                tableVlsm.insertRow(rowCurrent)
+                updateRowSizeTable(tableVlsm)
+                for methodeCurrent in range(len(methodes)):
+                    methode = methodes[methodeCurrent]
+                    ipInfo = getattr(subnet_work, methode)
+                    newItem = QTableWidgetItem(str(ipInfo))
+                    tableVlsm.setItem(rowCurrent, methodeCurrent, newItem)
+                rowCurrent += 1
+        except Exception as e:
+            errMessage(window, errVlsm(str(e)))
+    updateRowSizeTable(tableVlsm)
 
 
 def findLayout(widget, layoutType):
@@ -215,22 +301,25 @@ def removeRowSelected(table):
 
 
 def importVlsm(table, tableVlsm):
-    table.setRowCount(0)
-    rowCurrent = 0
-    for row in range(tableVlsm.rowCount()):
-        key = {f"{tableVlsm.horizontalHeaderItem(subNetwork).text()}": f"{tableVlsm.item(row, subNetwork).text()}" for subNetwork in range(tableVlsm.columnCount())}
-        name, subnetMask, network = key['Nom'], key['Masque de sous réseau'], key['@Réseau']
-        table.insertRow(rowCurrent)
+    window = table.window()
+    response = __ActionMessage(window, "Voulez-vous écraser votre plan d'adressage?")
+    if response:
+        table.setRowCount(0)
+        rowCurrent = 0
+        for row in range(tableVlsm.rowCount()):
+            key = {f"{tableVlsm.horizontalHeaderItem(subNetwork).text()}": f"{tableVlsm.item(row, subNetwork).text()}" for subNetwork in range(tableVlsm.columnCount())}
+            name, subnetMask, network = key['Nom'], key['Masque de sous réseau'], key['@Réseau']
+            table.insertRow(rowCurrent)
+            newItemName = QTableWidgetItem(name)
+            newItemSubnetMask = QTableWidgetItem(subnetMask)
+            newItemNetwork = QTableWidgetItem(network)
+
+            table.setItem(rowCurrent, 1, newItemName)
+            table.setItem(rowCurrent, 4, newItemSubnetMask)
+            table.setItem(rowCurrent, 5, newItemNetwork)
+
+            rowCurrent += 1
         updateRowSizeTable(table)
-        newItemName = QTableWidgetItem(name)
-        newItemSubnetMask = QTableWidgetItem(subnetMask)
-        newItemNetwork = QTableWidgetItem(network)
-
-        table.setItem(rowCurrent, 1, newItemName)
-        table.setItem(rowCurrent, 4, newItemSubnetMask)
-        table.setItem(rowCurrent, 5, newItemNetwork)
-
-    rowCurrent += 1
 
 
 def readFile(_file):
@@ -240,17 +329,22 @@ def readFile(_file):
     file.close()
 
 
+def getImportDialog(window, caption, filter):
+    fileDialog = QFileDialog(window)
+    file, _ = fileDialog.getOpenFileName(window, caption, "", filter)
+    return file
+
+
 def importCSV(table):
     window = table.window()
-    fileDialog = QFileDialog(window)
-    file, _ = fileDialog.getOpenFileName(window, "Sélectionner un fichier", "", "Fichier CSV (*csv)")
-    table.setRowCount(0)
-    if file:
-        lines = [line for line in readFile(file)]
-        lines.pop(0)
-        drawAdressingPlan(table, lines)
-    else:
-        updateRowSizeTable(table)
+    response = __ActionMessage(window, "Voulez-vous écraser votre plan d'adressage?")
+    if response:
+        file = getImportDialog(window, "Sélectionner un fichier", "Fichier CSV (*csv)")
+        if file:
+            table.setRowCount(0)
+            lines = [line for line in readFile(file)]
+            lines.pop(0)
+            drawAdressingPlan(table, lines)
 
 
 def readExcel(file):
@@ -272,17 +366,16 @@ def readExcel(file):
 
 def importExcel(table):
     window = table.window()
-    fileDialog = QFileDialog(window)
-    file, _ = fileDialog.getOpenFileName(window, "Sélectionner un fichier", "", "Fichier Excel (*xlsx)")
-    table.setRowCount(0)
-    if file:
-        lines = readExcel(file)
-        lines.pop(0)
-        drawAdressingPlan(table, lines)
-    else:
-        updateRowSizeTable(table)
-        
-    
+    response = __ActionMessage(window, "Voulez-vous écraser votre plan d'adressage?")
+    if response:
+        file = getImportDialog(window, "Sélectionner un fichier", "Fichier Excel (*xlsx)")
+        if file:
+            table.setRowCount(0)
+            lines = readExcel(file)
+            lines.pop(0)
+            drawAdressingPlan(table, lines)
+
+
 def drawAdressingPlan(table, lines):
     for row in range(len(lines)):
         table.insertRow(row)
@@ -303,10 +396,14 @@ def toImport(table, choiceImport, importThis):
         importExcel(table)
 
 
-def generateCsv(window, text):
-
+def getSaveDialog(window, caption, filter):
     dialogFile = QFileDialog(window)
-    newFile, _ = dialogFile.getSaveFileName(window, "Créer ou écraser un fichier CSV", "", "Fichier (*csv)")
+    newFile, _ = dialogFile.getSaveFileName(window, caption, "", filter)
+    return newFile
+
+
+def generateCsv(window, text):
+    newFile = getSaveDialog(window, "Créer ou écraser un fichier CSV", "Fichier (*csv)")
     if newFile:
         with open(newFile+(".csv" if not newFile.endswith(".csv") else ''), "w", encoding="utf-8") as file:
             file.writelines(text)
@@ -314,8 +411,7 @@ def generateCsv(window, text):
 
 
 def generateExcel(window, lines, columnHeader):
-    dialogFile = QFileDialog(window)
-    newFile, _ = dialogFile.getSaveFileName(window, "Créer ou écraser un fichier Excel", "", "Fichier (*xlsx)")
+    newFile = getSaveDialog(window, "Créer ou écraser un fichier Excel", "Fichier (*xlsx)")
     newWorkBook = Workbook()
     sheet = newWorkBook.active
     rowLines = 0
