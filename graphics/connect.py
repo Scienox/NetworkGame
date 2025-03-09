@@ -412,18 +412,19 @@ def generateCsv(window, text):
 
 def generateExcel(window, lines, columnHeader):
     newFile = getSaveDialog(window, "Créer ou écraser un fichier Excel", "Fichier (*xlsx)")
-    newWorkBook = Workbook()
-    sheet = newWorkBook.active
-    rowLines = 0
-    for row in range(1, (len(lines))*2, +2):
-        for column in range(0, len(columnHeader)):
-            setLetters = columnHeader[column]
-            startCell = f"{setLetters[0]}{row}"
-            endCell = f"{setLetters[1]}{row+1}"
-            sheet.merge_cells(f"{startCell}:{endCell}")
-            sheet[startCell] = lines[rowLines][column]
-        rowLines += 1
-    newWorkBook.save(newFile+(".xlsx" if not newFile.endswith(".xlsx") else ''))
+    if newFile:
+        newWorkBook = Workbook()
+        sheet = newWorkBook.active
+        rowLines = 0
+        for row in range(1, (len(lines))*2, +2):
+            for column in range(0, len(columnHeader)):
+                setLetters = columnHeader[column]
+                startCell = f"{setLetters[0]}{row}"
+                endCell = f"{setLetters[1]}{row+1}"
+                sheet.merge_cells(f"{startCell}:{endCell}")
+                sheet[startCell] = lines[rowLines][column]
+            rowLines += 1
+        newWorkBook.save(newFile+(".xlsx" if not newFile.endswith(".xlsx") else ''))
 
 
 def exportToCsv(table, horizontalHeader):
