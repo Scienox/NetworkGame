@@ -3,7 +3,7 @@ from ip_untils.vlsm import VLSM
 from ip_untils.helpfunction import cidrRequiermentForHost, cidrRequiermentForSubnetMask
 from PySide6.QtWidgets import QTableWidgetItem, QHeaderView, QGridLayout, QSpacerItem, QFileDialog, QMessageBox
 from PySide6.QtCore import Qt
-import openpyxl
+from openpyxl import Workbook, load_workbook
 
 
 def __selectChoiceCidr(choiceDelimiter, delimiterNetwork):
@@ -254,7 +254,7 @@ def importCSV(table):
 
 
 def readExcel(file):
-    workbook = openpyxl.load_workbook(file)
+    workbook = load_workbook(file)
 
     sheet = workbook.active
     lines = list()
@@ -313,6 +313,23 @@ def generateCsv(window, text):
         file.close()
 
 
+def generateExcel(window, lines, columnHeader):
+    dialogFile = QFileDialog(window)
+    newFile, _ = dialogFile.getSaveFileName(window, "Créer ou écraser un fichier Excel", "", "Fichier (*xlsx)")
+    newWorkBook = Workbook()
+    sheet = newWorkBook.active
+    rowLines = 0
+    for row in range(1, (len(lines))*2, +2):
+        for column in range(0, len(columnHeader)):
+            setLetters = columnHeader[column]
+            startCell = f"{setLetters[0]}{row}"
+            endCell = f"{setLetters[1]}{row+1}"
+            sheet.merge_cells(f"{startCell}:{endCell}")
+            sheet[startCell] = lines[rowLines][column]
+        rowLines += 1
+    newWorkBook.save(newFile+(".xlsx" if not newFile.endswith(".xlsx") else ''))
+
+
 def exportToCsv(table, horizontalHeader):
     lines = [line for line in readTable(table)]
     lines.insert(0, horizontalHeader)
@@ -322,8 +339,11 @@ def exportToCsv(table, horizontalHeader):
     generateCsv(table.window(), text)
 
 
-def exportToExcel():
-    print("Excel")
+def exportToExcel(table, horizontalHeader):
+    lines = [line for line in readTable(table)]
+    lines.insert(0, horizontalHeader)
+    columnHeader = [("A","B"),("C","D"),("E","F"),("G","H"),("I","J"),("K","L"),("M","N"),("O","P"),("Q","R")]
+    generateExcel(table.window(), lines, columnHeader)
 
 
 def toExport(table, horizontalHeader):
@@ -339,4 +359,4 @@ def toExport(table, horizontalHeader):
     if response == csvRole:
         exportToCsv(table, horizontalHeader)
     elif response == excelRole:
-        exportToExcel()
+        exportToExcel(table, horizontalHeader)

@@ -33,7 +33,6 @@ Outil de réseau graphique:
         7) Importer le sous réseautage généré par VLSM
         8) Importer un fichier CSV (*csv) ou Excel (*xlxs)
         9) Exporter ou écraser le plan d'adressage vers un fichier CSV (*csv) ou Excel (*xlxs)
-            exportation vers fichier excel non implémenté
 
     Jeux/Entraînement:
         À venir
