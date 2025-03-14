@@ -21,6 +21,7 @@ class __Error:
     def true(self):
         self._status = True
 
+    @property
     def false(self):
         self._status = False
 
