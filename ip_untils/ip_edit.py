@@ -2,12 +2,11 @@ from .ip import IP
 
 
 class IpEdit:
-    def __init__(self, ipHost, totalHost, cidr, subMask, network, firstHost, lastHost, broadcast, nextNetwork, reservation, classIP):
+    def __init__(self, classIP, typeIP, reservation, ipHost, subMask, network, totalHost, firstHost, lastHost, broadcast, nextNetwork):
         self.score_ = 0
         self.feedBack = []
         self.ipHost = ipHost
         self.totalHost = int(totalHost)
-        self.cidr = int(cidr)
         self.subMask = subMask
         self.network = network
         self.firstHost = firstHost
@@ -16,6 +15,7 @@ class IpEdit:
         self.nextNetwork = nextNetwork
         self.reservation = reservation
         self.classIP = classIP
+        self.typeIp = typeIP
 
     def __eq__(self, ip:IP):
         feedBack = []
@@ -25,8 +25,6 @@ class IpEdit:
                 feedBack.append(f"- Wrong @Ipv4: {self.ipHost}\n\tCorrect -> {ip.ipHost}\n")
             if not self.ifTotalHost(ip):
                 feedBack.append(f"- Wrong total host: {self.totalHost}\n\tCorrect -> {ip.totalHost}\n")
-            if not self.ifCidr(ip):
-                feedBack.append(f"- Wrong CIDR: {self.cidr}\n\tCorrect -> {ip.cidr}\n")
             if not self.ifSubNetMask(ip) :
                 feedBack.append(f"- Wrong Subnet Mask: {self.subMask}\n\tCorrect -> {ip.subMask}\n")
             if not self.ifNetwork(ip):
@@ -38,11 +36,13 @@ class IpEdit:
             if not self.ifBroadcast(ip):
                 feedBack.append(f"- Wrong @broadcast: {self.broadcast}\n\tCorrect -> {ip.broadcast}\n")
             if not self.ifNextNetwork(ip):
-                feedBack.append(f"- Wrong next @network: {self.nextNetwork}\n\tCorrect -> {self.get_next_network}\n")
+                feedBack.append(f"- Wrong next @network: {self.nextNetwork}\n\tCorrect -> {self.get_next_network(ip)}\n")
             if not self.ifClassIP(ip):
                 feedBack.append(f"- Wrong class ip: {self.classIP}\n\tCorrect -> {ip.classIP}\n")
             if not self.ifReservation(ip):
                 feedBack.append(f"- Wrong reservation: {self.reservation}\n\tCorrect -> {ip.reservation}\n")
+            if not self.ifType(ip):
+                feedBack.append(f"- Wrong type: {self.typeIp}\n\tCorrect -> {ip.type}\n")
 
             self.feedBack = feedBack.copy()
 
@@ -62,12 +62,6 @@ class IpEdit:
 
     def ifTotalHost(self, ip):
         if self.totalHost == ip.totalHost:
-            self.score_ += 1
-            return True
-        return False
-
-    def ifCidr(self, ip):
-        if self.cidr == ip.cidr:
             self.score_ += 1
             return True
         return False
@@ -120,9 +114,20 @@ class IpEdit:
             return True
         return False
     
-    @property
+    def ifType(self, ip:IP):
+        if self.typeIp == ip.type:
+            self.score_ += 1
+            return True
+        else:
+            return False
+
     def get_next_network(self, ip:IP):
         try:
             return ip.get_next_network(30).network
         except:
             return ''
+        
+    @property
+    def show_display(self):
+        for row in self.feedBack:
+            print(row)

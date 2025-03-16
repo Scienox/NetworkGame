@@ -3,11 +3,9 @@ from ip_untils.vlsm import VLSM
 from ip_untils.helpfunction import cidrRequiermentForHost, cidrRequiermentForSubnetMask
 from PySide6.QtWidgets import (QTableWidgetItem, QHeaderView, QGridLayout,
                                QSpacerItem, QFileDialog, QMessageBox, QLabel)
-from PySide6.QtCore import Qt, QThread, Signal
+from PySide6.QtCore import Qt
 from openpyxl import Workbook, load_workbook
 from .errorMessage import *
-from time import sleep
-import types
 
 
 class __Error:
@@ -47,62 +45,6 @@ class __ActionMessage(QMessageBox):
             return True
         elif self.clickedButton() == self.no:
             return False
-
-
-class TimerThread(QThread):
-    finished = Signal()
-
-    def __init__(self, parent, timer:QLabel):
-        super().__init__(parent)
-        self._isRunning = True
-        self.timer = timer
-        self._minutes = 0
-        self._secondes = 0
-
-    @property
-    def secondes(self):
-        return self._secondes
-    
-    @property
-    def minutes(self):
-        return self._minutes
-    
-    @property
-    def _addMinute(self):
-        self._minutes += 1
-        self._resetSecondes
-        if self._minutes == 60:
-            self.stop()
-
-    @property
-    def _addSeconde(self):
-        self._secondes += 1
-        if  60 == self._secondes:
-            self._addMinute
-
-    @property
-    def _resetSecondes(self):
-        self._secondes = 0
-
-    @property
-    def isRunning(self):
-        return self._isRunning
-
-    def stop(self):
-        self.finished.emit()
-        self._isRunning = False
-
-    def reset(self):
-        self._minutes = 0
-        self._secondes = 0
-        self._isRunning = True
-
-    def run(self):
-        self.reset()
-        while self.isRunning:
-            self._addSeconde
-            self.timer.setText(f"{self.minutes:02}:{self.secondes:02}")
-            sleep(1)
 
 
 def errMessage(window, text):
@@ -519,17 +461,6 @@ def toExport(table, horizontalHeader):
         exportToExcel(table, horizontalHeader)
 
 
-def updateTime(timer:QLabel):
-    min = 0
-    sec = 0
-    while min < 60:
-        sec += 1
-        if sec == 60:
-            min += 1
-            sec = 0
-        timer.setText(f"{min:02}:{sec:02}")
-        sleep(1)
-
-
-def startIpAnalyse(timer, randomIp, randomCidr, inputs):
-    timer.start()
+def startIpAnalyse(timer):
+    if not timer:
+        timer.start()

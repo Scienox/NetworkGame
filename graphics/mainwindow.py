@@ -6,6 +6,7 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout,
                                 )
 from PySide6.QtCore import Qt
 from .connect import *
+from .game import GameThreadIpAnalyse
 
 
 class MainWindow(QMainWindow):
@@ -277,8 +278,8 @@ class MainWindow(QMainWindow):
         self.layoutGameInfo = QHBoxLayout(self.widgetGameInfo)
         self.widgetGameInfo.setLayout(self.layoutGameInfo)
         self.labelTimer = QLabel(parent=self.widgetGameInfo, text="00:00")
-        self.labelRandomIp = QLabel(parent=self.widgetGameInfo, text="192.168.100.100")
-        self.labelRandomCidr = QLabel(parent=self.widgetGameInfo, text="/24")
+        self.labelRandomIp = QLabel(parent=self.widgetGameInfo, text="_._._._")
+        self.labelRandomCidr = QLabel(parent=self.widgetGameInfo, text="/")
         self.buttonStartAnalyseIp = QPushButton(parent=self.widgetGameInfo, text="Démarrer")
         self.layoutGameInfo.addWidget(self.labelTimer)
         self.layoutGameInfo.addWidget(self.labelRandomIp)
@@ -289,35 +290,51 @@ class MainWindow(QMainWindow):
         self.formLayoutAskIpAnalyse = QFormLayout(self.widgetAskIpAnalyse)
         self.widgetAskIpAnalyse.setLayout(self.formLayoutAskIpAnalyse)
         modelLineEditForm = lambda: QLineEdit(parent=self.widgetAskIpAnalyse)
+        modelComboBoxForm = lambda: QComboBox(parent=self.widgetAskIpAnalyse)
+        self.comboBoxFormClass = modelComboBoxForm()
+        self.comboBoxFormClass.addItems(["", "A", "B", "C", "D", "E"])
+        self.comboBoxFormType = modelComboBoxForm()
+        self.comboBoxFormType.addItems(["", "@réseau", "@broadcast", "@Ipv4"])
+        self.comboBoxFormReservation = modelComboBoxForm()
+        self.comboBoxFormReservation.addItems(["", "Privée", "Publique", "LocalHost", "Multicast", "IETF"])
         self.lineEditFormIpv4 = modelLineEditForm()
         self.lineEditFormMask = modelLineEditForm()
         self.lineEditFormNetwork = modelLineEditForm()
         self.lineEditFormAvaibleHosts = modelLineEditForm()
         self.lineEditFormFirstHost = modelLineEditForm()
         self.lineEditFormLastHost = modelLineEditForm()
+        self.lineEditFormBroadcast = modelLineEditForm()
         self.lineEditFormNextNetwork = modelLineEditForm()
+        self.buttonValidateIpAnalyse = QPushButton(parent=self.widgetAskIpAnalyse, text="Valider")
+        self.formLayoutAskIpAnalyse.addRow("Classe:", self.comboBoxFormClass)
+        self.formLayoutAskIpAnalyse.addRow("Type:", self.comboBoxFormType)
+        self.formLayoutAskIpAnalyse.addRow("Réservation:", self.comboBoxFormReservation)
         self.formLayoutAskIpAnalyse.addRow("@Ipv4:", self.lineEditFormIpv4)
         self.formLayoutAskIpAnalyse.addRow("Masque de sous réseau:", self.lineEditFormMask)
         self.formLayoutAskIpAnalyse.addRow("@Réseau: ", self.lineEditFormNetwork)
         self.formLayoutAskIpAnalyse.addRow("Hôtes disponibles:", self.lineEditFormAvaibleHosts)
         self.formLayoutAskIpAnalyse.addRow("1ère @Disponible:", self.lineEditFormFirstHost)
         self.formLayoutAskIpAnalyse.addRow("Dernière @Disponible:", self.lineEditFormLastHost)
+        self.formLayoutAskIpAnalyse.addRow("@Broadcast:", self.lineEditFormBroadcast)
         self.formLayoutAskIpAnalyse.addRow("Réseau suivant:", self.lineEditFormNextNetwork)
+        self.formLayoutAskIpAnalyse.addWidget(self.buttonValidateIpAnalyse)
 
         inputs = [
-            self.lineEditFormIpv4, self.lineEditFormMask, self.lineEditFormNetwork,
-            self.lineEditFormAvaibleHosts, self.lineEditFormFirstHost, self.lineEditFormLastHost,
-            self.lineEditFormNextNetwork,
+            lambda: self.comboBoxFormClass.currentText(), lambda: self.comboBoxFormType.currentText(), lambda: self.comboBoxFormReservation.currentText(),
+            lambda: self.lineEditFormIpv4.text(), lambda: self.lineEditFormMask.text(), lambda: self.lineEditFormNetwork.text(),
+            lambda: self.lineEditFormAvaibleHosts.text(), lambda: self.lineEditFormFirstHost.text(), lambda: self.lineEditFormLastHost.text(),
+            lambda: self.lineEditFormBroadcast.text(), lambda: self.lineEditFormNextNetwork.text()
         ]
 
         self.layoutIpAnalyse.addWidget(self.widgetGameInfo, 0, 0, 1, -1)
         self.layoutIpAnalyse.addWidget(self.widgetAskIpAnalyse, 1, 0, -1, -1)
         self.layoutIpAnalyse.addItem(self.spacerForTable, 2, 0)
 
-        self.timerIpAnalyse = TimerThread(self.window(), self.labelTimer)
+        self.timerIpAnalyse = GameThreadIpAnalyse(self.window(), self.labelTimer, self.labelRandomIp,
+                                                  self.labelRandomCidr, self.buttonValidateIpAnalyse, inputs)
 
-        self.buttonStartAnalyseIp.clicked.connect(lambda: startIpAnalyse(self.timerIpAnalyse, self.labelRandomIp,
-                                                                         self.labelRandomCidr, inputs))
+        self.buttonValidateIpAnalyse.setEnabled(False)
+        self.buttonStartAnalyseIp.clicked.connect(lambda: startIpAnalyse(self.timerIpAnalyse))
 
     def __menuBar(self):
         pass

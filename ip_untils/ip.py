@@ -248,7 +248,7 @@ class IP:
             else:
                 return "public"
         elif self.classIP == "None":
-            return "localhosts"
+            return "localhost"
         elif self.classIP == "B":
             if (171 < self.network_[0] < 173) and (15 < self.network_[1] < 32):
                 return "private"
