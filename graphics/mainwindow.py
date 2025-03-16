@@ -2,7 +2,7 @@ from PySide6.QtWidgets import (QMainWindow, QWidget, QHBoxLayout,
                                 QVBoxLayout, QGridLayout, QPushButton,
                                 QLineEdit, QStackedWidget, QTableWidget,
                                 QComboBox, QHeaderView, QLabel, QSpacerItem,
-                                QSizePolicy
+                                QSizePolicy, QFormLayout
                                 )
 from PySide6.QtCore import Qt
 from .connect import *
@@ -36,6 +36,7 @@ class MainWindow(QMainWindow):
         self.ipBinaryPage = QWidget(parent=self.stackedWidget)
         self.vlsmPage = QWidget(parent=self.stackedWidget)
         self.addressingPlanPage = QWidget(parent=self.stackedWidget)
+        self.trainingGamePage = QWidget(parent=self.stackedWidget)
         self.__buildWelcomePage()
 
         self.stackedWidget.addWidget(self.welcomePage)
@@ -43,6 +44,7 @@ class MainWindow(QMainWindow):
         self.stackedWidget.addWidget(self.ipBinaryPage)
         self.stackedWidget.addWidget(self.vlsmPage)
         self.stackedWidget.addWidget(self.addressingPlanPage)
+        self.stackedWidget.addWidget(self.trainingGamePage)
 
         self.layoutCentralWidget.addWidget(self.homeButton)
         self.layoutCentralWidget.addWidget(self.stackedWidget)
@@ -57,16 +59,20 @@ class MainWindow(QMainWindow):
         self.buttonPageVlsm.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(3))
         self.buttonPageAddressingPlan = QPushButton(self.stackedWidget, text="Plan d'adressage")
         self.buttonPageAddressingPlan.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(4))
+        self.buttonPageTrainingGame = QPushButton(parent=self.stackedWidget, text="Jeu d'entrainement")
+        self.buttonPageTrainingGame.clicked.connect(lambda: self.stackedWidget.setCurrentIndex(5))
 
         self.layoutWelcomePageGrid.addWidget(self.buttonPageIpconfig, 0, 0)
         self.layoutWelcomePageGrid.addWidget(self.buttonPageBinary, 0, 1)
         self.layoutWelcomePageGrid.addWidget(self.buttonPageVlsm, 1, 0)
         self.layoutWelcomePageGrid.addWidget(self.buttonPageAddressingPlan, 1, 1)
+        self.layoutWelcomePageGrid.addWidget(self.buttonPageTrainingGame, 2, 0, 1, -1)
 
         self.__buildIpConfig()
         self.__buildIpBinary()
         self.__buildVlsm()
         self.__buildAddressingPlan()
+        self.__buildMainGame()
 
     def __buildIpConfig(self):
         self.layoutIpConfigWidget = QGridLayout(self.IpConfigPage)
@@ -236,6 +242,82 @@ class MainWindow(QMainWindow):
         self.pushButtonAddBeforeTarget.clicked.connect(lambda: addBeforeTRowAddrerssingPLan(self.tableAddressingPlan))
         self.pushButtonImport.clicked.connect(lambda: toImport(self.tableAddressingPlan, self.comboBoxImport.currentIndex(), self.tableVlsm))
         self.pushButtonExport.clicked.connect(lambda: toExport(self.tableAddressingPlan, columns))
+
+    def __buildMainGame(self):
+        self.layoutTrainingGamePage = QVBoxLayout(self.trainingGamePage)
+        self.trainingGamePage.setLayout(self.layoutTrainingGamePage)
+
+        self.buttonReturnGameMenu = QPushButton(parent=self.trainingGamePage, text="<-")
+        self.stackedWidgetGame = QStackedWidget(parent=self.trainingGamePage)
+        self.widgetIpAnalyse = QWidget(parent=self.stackedWidgetGame)
+        self.widgetMenuGame = QWidget(parent=self.stackedWidgetGame)
+        self.layoutMenuGame = QGridLayout(self.widgetMenuGame)
+        self.widgetMenuGame.setLayout(self.layoutMenuGame)
+
+        self.buttonIpAnalyse = QPushButton(parent=self.widgetMenuGame, text="Analyse Ip")
+
+        self.layoutMenuGame.addWidget(self.buttonIpAnalyse, 0, 0, 1, -1)
+
+        self.stackedWidgetGame.addWidget(self.widgetMenuGame)
+        self.stackedWidgetGame.addWidget(self.widgetIpAnalyse)
+
+        self.layoutTrainingGamePage.addWidget(self.buttonReturnGameMenu)
+        self.layoutTrainingGamePage.addWidget(self.stackedWidgetGame)
+
+        self.buttonReturnGameMenu.clicked.connect(lambda: self.stackedWidgetGame.setCurrentIndex(0))
+        self.buttonIpAnalyse.clicked.connect(lambda: self.stackedWidgetGame.setCurrentIndex(1))
+
+        self.__IpAnalyseScreen()
+        
+    def __IpAnalyseScreen(self):
+        self.layoutIpAnalyse = QGridLayout(self.widgetIpAnalyse)
+        self.widgetIpAnalyse.setLayout(self.layoutIpAnalyse)
+
+        self.widgetGameInfo = QWidget(parent=self.widgetIpAnalyse)
+        self.layoutGameInfo = QHBoxLayout(self.widgetGameInfo)
+        self.widgetGameInfo.setLayout(self.layoutGameInfo)
+        self.labelTimer = QLabel(parent=self.widgetGameInfo, text="00:00")
+        self.labelRandomIp = QLabel(parent=self.widgetGameInfo, text="192.168.100.100")
+        self.labelRandomCidr = QLabel(parent=self.widgetGameInfo, text="/24")
+        self.buttonStartAnalyseIp = QPushButton(parent=self.widgetGameInfo, text="Démarrer")
+        self.layoutGameInfo.addWidget(self.labelTimer)
+        self.layoutGameInfo.addWidget(self.labelRandomIp)
+        self.layoutGameInfo.addWidget(self.labelRandomCidr)
+        self.layoutGameInfo.addWidget(self.buttonStartAnalyseIp)
+
+        self.widgetAskIpAnalyse = QWidget(parent=self.widgetIpAnalyse)
+        self.formLayoutAskIpAnalyse = QFormLayout(self.widgetAskIpAnalyse)
+        self.widgetAskIpAnalyse.setLayout(self.formLayoutAskIpAnalyse)
+        modelLineEditForm = lambda: QLineEdit(parent=self.widgetAskIpAnalyse)
+        self.lineEditFormIpv4 = modelLineEditForm()
+        self.lineEditFormMask = modelLineEditForm()
+        self.lineEditFormNetwork = modelLineEditForm()
+        self.lineEditFormAvaibleHosts = modelLineEditForm()
+        self.lineEditFormFirstHost = modelLineEditForm()
+        self.lineEditFormLastHost = modelLineEditForm()
+        self.lineEditFormNextNetwork = modelLineEditForm()
+        self.formLayoutAskIpAnalyse.addRow("@Ipv4:", self.lineEditFormIpv4)
+        self.formLayoutAskIpAnalyse.addRow("Masque de sous réseau:", self.lineEditFormMask)
+        self.formLayoutAskIpAnalyse.addRow("@Réseau: ", self.lineEditFormNetwork)
+        self.formLayoutAskIpAnalyse.addRow("Hôtes disponibles:", self.lineEditFormAvaibleHosts)
+        self.formLayoutAskIpAnalyse.addRow("1ère @Disponible:", self.lineEditFormFirstHost)
+        self.formLayoutAskIpAnalyse.addRow("Dernière @Disponible:", self.lineEditFormLastHost)
+        self.formLayoutAskIpAnalyse.addRow("Réseau suivant:", self.lineEditFormNextNetwork)
+
+        inputs = [
+            self.lineEditFormIpv4, self.lineEditFormMask, self.lineEditFormNetwork,
+            self.lineEditFormAvaibleHosts, self.lineEditFormFirstHost, self.lineEditFormLastHost,
+            self.lineEditFormNextNetwork,
+        ]
+
+        self.layoutIpAnalyse.addWidget(self.widgetGameInfo, 0, 0, 1, -1)
+        self.layoutIpAnalyse.addWidget(self.widgetAskIpAnalyse, 1, 0, -1, -1)
+        self.layoutIpAnalyse.addItem(self.spacerForTable, 2, 0)
+
+        self.timerIpAnalyse = TimerThread(self.window(), self.labelTimer)
+
+        self.buttonStartAnalyseIp.clicked.connect(lambda: startIpAnalyse(self.timerIpAnalyse, self.labelRandomIp,
+                                                                         self.labelRandomCidr, inputs))
 
     def __menuBar(self):
         pass
