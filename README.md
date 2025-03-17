@@ -35,4 +35,8 @@ Outil de réseau graphique:
         9) Exporter ou écraser le plan d'adressage vers un fichier CSV (*csv) ou Excel (*xlxs)
 
     Jeux/Entraînement:
-        À venir
+        Analyse Ip:
+            1) Analyser une adresse Ip ainsi que son CIDR afin de compléter le formulaire
+                dans le temps imparti définit avant le lancement de la partie
+            2) Définir un genre d'Ip par des modes de défis [Classe=alléatoire, Type=alléatoire,
+                temps 02:00-60:00min=60:00, CIDR plage 1-30=1-30]
