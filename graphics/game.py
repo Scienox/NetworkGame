@@ -61,6 +61,8 @@ class GameThreadIpAnalyse(QThread):
     def reset(self):
         self._minutes = 0
         self._secondes = -1
+        [self.translationDetect(element.setText('') if isinstance(element, QLineEdit) else element.setCurrentIndex(0)) for element in self._inputs]
+        [element.setEnabled(True) for element in self._inputs]
         self._isRunning = True
 
     def run(self):
@@ -72,7 +74,7 @@ class GameThreadIpAnalyse(QThread):
             self.timer.setText(f"{self.minutes:02}:{self.secondes:02}")
             sleep(1)
 
-    def traductionDetect(self, element):
+    def translationDetect(self, element):
         reservation = ["Privée", "Publique", "LocalHost", "Multicast"]
         if element in reservation:
             if element == reservation[0]:
@@ -90,20 +92,20 @@ class GameThreadIpAnalyse(QThread):
         else:
             return element
 
-
     def generateChallenge(self, type=None, class_=None, time=None):
         self.ip = IP("192.168.0.5", 24)
 
         self._randomIp.setText(self.ip.ipHost)
-        self._randomCidr.setText(str(self.ip.cidr))
+        self._randomCidr.setText('/' + str(self.ip.cidr))
 
     def validate(self):
         inputs = self._inputs
-        ipEditList = [self.traductionDetect(element()) for element in inputs]
+        ipEditList = [self.translationDetect(element.text() if isinstance(element, QLineEdit) else element.currentText()) for element in inputs]
         ipEdit = IpEdit(
             *ipEditList
         )
-
+        [element.setEnabled(False) for element in self._inputs]
         ipEdit == self.ip
         print(ipEdit.show_display)
         self.stop()
+ 

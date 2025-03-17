@@ -279,7 +279,7 @@ class MainWindow(QMainWindow):
         self.widgetGameInfo.setLayout(self.layoutGameInfo)
         self.labelTimer = QLabel(parent=self.widgetGameInfo, text="00:00")
         self.labelRandomIp = QLabel(parent=self.widgetGameInfo, text="_._._._")
-        self.labelRandomCidr = QLabel(parent=self.widgetGameInfo, text="/")
+        self.labelRandomCidr = QLabel(parent=self.widgetGameInfo, text="/_")
         self.buttonStartAnalyseIp = QPushButton(parent=self.widgetGameInfo, text="Démarrer")
         self.layoutGameInfo.addWidget(self.labelTimer)
         self.layoutGameInfo.addWidget(self.labelRandomIp)
@@ -320,11 +320,12 @@ class MainWindow(QMainWindow):
         self.formLayoutAskIpAnalyse.addWidget(self.buttonValidateIpAnalyse)
 
         inputs = [
-            lambda: self.comboBoxFormClass.currentText(), lambda: self.comboBoxFormType.currentText(), lambda: self.comboBoxFormReservation.currentText(),
-            lambda: self.lineEditFormIpv4.text(), lambda: self.lineEditFormMask.text(), lambda: self.lineEditFormNetwork.text(),
-            lambda: self.lineEditFormAvaibleHosts.text(), lambda: self.lineEditFormFirstHost.text(), lambda: self.lineEditFormLastHost.text(),
-            lambda: self.lineEditFormBroadcast.text(), lambda: self.lineEditFormNextNetwork.text()
+            self.comboBoxFormClass, self.comboBoxFormType, self.comboBoxFormReservation,
+            self.lineEditFormIpv4, self.lineEditFormMask, self.lineEditFormNetwork,
+            self.lineEditFormAvaibleHosts, self.lineEditFormFirstHost, self.lineEditFormLastHost,
+            self.lineEditFormBroadcast, self.lineEditFormNextNetwork
         ]
+        [element.setEnabled(False) for element in inputs]
 
         self.layoutIpAnalyse.addWidget(self.widgetGameInfo, 0, 0, 1, -1)
         self.layoutIpAnalyse.addWidget(self.widgetAskIpAnalyse, 1, 0, -1, -1)

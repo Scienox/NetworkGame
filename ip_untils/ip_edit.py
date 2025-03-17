@@ -6,7 +6,10 @@ class IpEdit:
         self.score_ = 0
         self.feedBack = []
         self.ipHost = ipHost
-        self.totalHost = int(totalHost)
+        try:
+            self.totalHost = int(totalHost)
+        except:
+            self.totalHost = 'None'
         self.subMask = subMask
         self.network = network
         self.firstHost = firstHost
