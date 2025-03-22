@@ -201,7 +201,9 @@ class selectChallengeAnalyseIp(QDialog):
         self.spinBoxTimeSec = CustomQSpinBox(self)
         self.spinBoxTimeSec.setMaximum(59)
         layoutTime.addWidget(self.spinBoxTimeMin)
+        layoutTime.addWidget(QLabel("min"))
         layoutTime.addWidget(self.spinBoxTimeSec)
+        layoutTime.addWidget(QLabel("s"))
 
         layoutClose = QHBoxLayout(self)
         validateButton = QPushButton("Valider")
