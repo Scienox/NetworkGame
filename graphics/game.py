@@ -181,16 +181,19 @@ class selectChallengeAnalyseIp(QDialog):
         random = "Aléatoire"
 
         self.comboBoxClass = QComboBox(self)
+        self.comboBoxClass.currentIndexChanged.connect(self.classChanged)
         self.comboBoxClass.addItems([random, "A", "B", "C", "D", "E"])
 
         self.comboBoxReservation = QComboBox(self)
+        self.comboBoxReservation.currentIndexChanged.connect(self.reservationChanged)
         self.comboBoxReservation.addItems([random, "Privée", "Publique", "LocalHost", "Multicast", "IETF"])
 
         self.comboBoxType = QComboBox(self)
         self.comboBoxType.addItems([random, "@Réseau", "@Broadcast", "@Ip"])
 
         self.spinBoxCidr = QSpinBox(self)
-        self.spinBoxCidr.setMinimum(1)
+        self.spinBoxCidr.valueChanged.connect(self.cidrChanged)
+        self.spinBoxCidr.setMinimum(0)
         self.spinBoxCidr.setMaximum(30)
 
         layoutTime = QHBoxLayout(self)
@@ -226,6 +229,83 @@ class selectChallengeAnalyseIp(QDialog):
 
     def __bool__(self):
         return self.validated
+    
+    def classChanged(self):
+        def simpleChoice():
+            self.comboBoxReservation.addItems([random, "Privée", "Publique"])
+        k = self.comboBoxClass.currentIndex()
+        random = "Aléatoire"
+        self.comboBoxReservation.clear()
+        if k == 0:
+            self.comboBoxReservation.addItems([random, "Privée", "Publique", "LocalHost", "Multicast", "IETF"])
+        elif k == 1:
+            simpleChoice()
+            if self.spinBoxCidr.value() < 8 and self.spinBoxCidr.value() != 0:
+                self.spinBoxCidr.setValue(8)
+        elif k == 2:
+            simpleChoice()
+            if self.spinBoxCidr.value() < 16 and self.spinBoxCidr.value() != 0:
+                self.spinBoxCidr.setValue(16)
+        elif k == 3:
+            self.comboBoxReservation.addItems([random, "Privée", "Publique", "IETF"])
+            if self.spinBoxCidr.value() < 24 and self.spinBoxCidr.value() != 0:
+                self.spinBoxCidr.setValue(24)
+        elif k == 4:
+            self.comboBoxReservation.addItems(["Multicast"])
+            if self.spinBoxCidr.value() < 4 and self.spinBoxCidr.value() != 0:
+                self.spinBoxCidr.setValue(4)
+        else:
+            self.comboBoxReservation.addItems([random])
+            if self.spinBoxCidr.value() < 4 and self.spinBoxCidr.value() != 0:
+                self.spinBoxCidr.setValue(4)
+
+    def reservationChanged(self):
+        targetR = self.comboBoxReservation.currentText()
+        targetC = self.comboBoxClass.currentText()
+        value = self.spinBoxCidr.value()
+        if targetR == "IETF" and value != 0:
+            self.spinBoxCidr.setValue(24)
+        elif targetC in ["D", "E"] and value < 4 and value != 0:
+            self.spinBoxCidr.setValue(4)
+        if targetC == "A" and value < 8 and value != 0:
+            self.spinBoxCidr.setValue(8)
+        elif targetR == "Privée" and targetC == "B" and value < 12 and value != 0:
+            self.spinBoxCidr.setValue(12)
+        elif targetR == "Privée" and targetC == "C" and value < 16 and value != 0:
+            self.spinBoxCidr.setValue(16)
+
+        if targetR == "Publique" and targetC == "B" and value < 16 and value != 0:
+            self.spinBoxCidr.setValue(16)
+        elif targetR == "Publique" and targetC == "C" and value < 24 and value != 0:
+            self.spinBoxCidr.setValue(24)
+        
+
+    def cidrChanged(self):
+        value = self.spinBoxCidr.value()
+        targetR = self.comboBoxReservation.currentText()
+        targetC = self.comboBoxClass.currentText()
+        if (value != 24) and (targetR == "IETF"):
+            self.comboBoxReservation.setCurrentIndex(0)
+
+        if targetC in ["D", "E"] and value < 4 and value != 0:
+            self.comboBoxClass.setCurrentIndex(0)
+            self.comboBoxReservation.setCurrentIndex(0)
+        if targetC == "A" and value < 8 and value != 0:
+            self.comboBoxClass.setCurrentIndex(0)
+            self.comboBoxReservation.setCurrentIndex(0)
+        elif targetR == "Privée" and targetC == "B" and value < 12 and value != 0:
+            self.comboBoxClass.setCurrentIndex(0)
+            self.comboBoxReservation.setCurrentIndex(0)
+        elif targetR == "Privée" and targetC == "C" and value < 16 and value != 0:
+            self.comboBoxClass.setCurrentIndex(0)
+            self.comboBoxReservation.setCurrentIndex(0)
+
+        if targetR == "Publique" and targetC == "B" and value < 16 and value != 0:
+            self.comboBoxClass.setCurrentIndex(0)
+            self.comboBoxReservation.setCurrentIndex(0)
+        elif targetR == "Publique" and targetC == "C" and value < 24 and value != 0:
+            self.comboBoxClass.setCurrentIndex(0)
+            self.comboBoxReservation.setCurrentIndex(0)
 
     def setValidated(self):
         self.validated = True
