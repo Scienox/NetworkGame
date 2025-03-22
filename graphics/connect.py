@@ -44,7 +44,7 @@ class __ActionMessage(QMessageBox):
         if self.clickedButton() == self.yes:
             return True
         elif self.clickedButton() == self.no:
-            return False
+            return False 
 
 
 def errMessage(window, text):
