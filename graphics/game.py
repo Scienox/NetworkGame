@@ -133,7 +133,10 @@ class GameThreadIpAnalyse(QThread):
                     randomByte[0] = choice([beforePrivate, afterPrivate])
 
             randomIp = ".".join(f"{byte}" for byte in randomByte)
-            randomCidr = randint(0, 30)
+            if cidr == 0:
+                randomCidr = randint(0, 30)
+            else:
+                randomCidr = cidr
             self.ip = IP(randomIp, randomCidr)
 
             self._randomIp.setText(self.ip.ipHost)
@@ -181,18 +184,15 @@ class selectChallengeAnalyseIp(QDialog):
         random = "Aléatoire"
 
         self.comboBoxClass = QComboBox(self)
-        self.comboBoxClass.currentIndexChanged.connect(self.classChanged)
         self.comboBoxClass.addItems([random, "A", "B", "C", "D", "E"])
 
         self.comboBoxReservation = QComboBox(self)
-        self.comboBoxReservation.currentIndexChanged.connect(self.reservationChanged)
         self.comboBoxReservation.addItems([random, "Privée", "Publique", "LocalHost", "Multicast", "IETF"])
 
         self.comboBoxType = QComboBox(self)
         self.comboBoxType.addItems([random, "@Réseau", "@Broadcast", "@Ip"])
 
         self.spinBoxCidr = QSpinBox(self)
-        self.spinBoxCidr.valueChanged.connect(self.cidrChanged)
         self.spinBoxCidr.setMinimum(0)
         self.spinBoxCidr.setMaximum(30)
 
@@ -223,6 +223,10 @@ class selectChallengeAnalyseIp(QDialog):
         MainLayout.addRow("Temps:", layoutTime)
         MainLayout.addRow(layoutClose)
 
+        self.comboBoxClass.currentIndexChanged.connect(self.classChanged)
+        self.comboBoxReservation.currentIndexChanged.connect(self.reservationChanged)
+        self.spinBoxCidr.valueChanged.connect(self.cidrChanged)
+
         self.setLayout(MainLayout)
 
         self.exec()
@@ -244,12 +248,12 @@ class selectChallengeAnalyseIp(QDialog):
                 self.spinBoxCidr.setValue(8)
         elif k == 2:
             simpleChoice()
-            if self.spinBoxCidr.value() < 16 and self.spinBoxCidr.value() != 0:
-                self.spinBoxCidr.setValue(16)
+            if self.spinBoxCidr.value() < 12 and self.spinBoxCidr.value() != 0:
+                self.spinBoxCidr.setValue(12)
         elif k == 3:
             self.comboBoxReservation.addItems([random, "Privée", "Publique", "IETF"])
-            if self.spinBoxCidr.value() < 24 and self.spinBoxCidr.value() != 0:
-                self.spinBoxCidr.setValue(24)
+            if self.spinBoxCidr.value() < 16 and self.spinBoxCidr.value() != 0:
+                self.spinBoxCidr.setValue(16)
         elif k == 4:
             self.comboBoxReservation.addItems(["Multicast"])
             if self.spinBoxCidr.value() < 4 and self.spinBoxCidr.value() != 0:
@@ -278,6 +282,10 @@ class selectChallengeAnalyseIp(QDialog):
             self.spinBoxCidr.setValue(16)
         elif targetR == "Publique" and targetC == "C" and value < 24 and value != 0:
             self.spinBoxCidr.setValue(24)
+        elif targetC == "B" and value < 12 and value != 0:
+            self.spinBoxCidr.setValue(12)
+        elif targetC == "C" and value < 16 and value != 0:
+            self.spinBoxCidr.setValue(16)
         
 
     def cidrChanged(self):
@@ -300,10 +308,16 @@ class selectChallengeAnalyseIp(QDialog):
             self.comboBoxClass.setCurrentIndex(0)
             self.comboBoxReservation.setCurrentIndex(0)
 
-        if targetR == "Publique" and targetC == "B" and value < 16 and value != 0:
+        elif targetR == "Publique" and targetC == "B" and value < 16 and value != 0:
             self.comboBoxClass.setCurrentIndex(0)
             self.comboBoxReservation.setCurrentIndex(0)
         elif targetR == "Publique" and targetC == "C" and value < 24 and value != 0:
+            self.comboBoxClass.setCurrentIndex(0)
+            self.comboBoxReservation.setCurrentIndex(0)
+        elif targetC == "B" and value < 12 and value != 0:
+            self.comboBoxClass.setCurrentIndex(0)
+            self.comboBoxReservation.setCurrentIndex(0)
+        elif targetC == "C" and value < 16 and value != 0:
             self.comboBoxClass.setCurrentIndex(0)
             self.comboBoxReservation.setCurrentIndex(0)
 
@@ -311,9 +325,9 @@ class selectChallengeAnalyseIp(QDialog):
         self.validated = True
 
     def validate_choices(self):
-        choiceClass = self.comboBoxClass.currentIndex()
-        choiceReservation = self.comboBoxReservation.currentIndex()
-        choiceType = self.comboBoxType.currentIndex()
+        choiceClass = self.comboBoxClass.currentText()
+        choiceReservation = self.comboBoxReservation.currentText()
+        choiceType = self.comboBoxType.currentText()
         choiceCidr = self.spinBoxCidr.value()
         choiceTime = self.spinBoxTimeMin.value(), self.spinBoxTimeSec.value()
         self.accept()
