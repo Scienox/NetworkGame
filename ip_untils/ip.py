@@ -255,14 +255,23 @@ class IP:
             else:
                 return "public"
         elif self.classIP == "C":
-            if (191 < self.network_[0] < 193) and (167 < self.network_[1] < 169):
+            if (self.network == "192.0.2.0") and (self.cidr == 24):
+                self.name_ = "(TEST-NET-1)"
+                return "IETF"
+            elif (self.network == "198.51.100.0") and (self.cidr == 24):
+                self.name_ = "(TEST-NET-2)"
+                return "IETF"
+            elif ("203.0.113.0" == self.network) and (self.cidr == 24):
+                self.name_ = "(TEST-NET-3)"
+                return "IETF"
+            elif (191 < self.network_[0] < 193) and (167 < self.network_[1] < 169):
                 return "private"
             else:
                 return "public"
         elif self.classIP == "D":
             return "multicast"
         else:
-            return "IETF"
+            return "None"
 
     def type_detect(self):
         if self.ipHost == self.network:
