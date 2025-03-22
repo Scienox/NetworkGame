@@ -117,7 +117,7 @@ class GameThreadIpAnalyse(QThread):
     def generateChallenge(self, loop, options):
         self.accept = True
         if len(options) != 0:
-            class_, reservation, type_, time = options
+            class_, reservation, type_, cidr, time = options
 
             self.setTimeOut(time)
             randomByte = [randint(0, 255) for _ in range(4)]
@@ -189,6 +189,10 @@ class selectChallengeAnalyseIp(QDialog):
         self.comboBoxType = QComboBox(self)
         self.comboBoxType.addItems([random, "@Réseau", "@Broadcast", "@Ip"])
 
+        self.spinBoxCidr = QSpinBox(self)
+        self.spinBoxCidr.setMinimum(1)
+        self.spinBoxCidr.setMaximum(30)
+
         layoutTime = QHBoxLayout(self)
         self.spinBoxTimeMin = CustomQSpinBox(self)
         self.spinBoxTimeMin.setMinimum(2)
@@ -210,6 +214,7 @@ class selectChallengeAnalyseIp(QDialog):
         MainLayout.addRow("Classe:", self.comboBoxClass)
         MainLayout.addRow("Réservation:", self.comboBoxReservation)
         MainLayout.addRow("Type:", self.comboBoxType)
+        MainLayout.addRow("CIDR:", self.spinBoxCidr)
         MainLayout.addRow("Temps:", layoutTime)
         MainLayout.addRow(layoutClose)
 
@@ -219,7 +224,7 @@ class selectChallengeAnalyseIp(QDialog):
 
     def __bool__(self):
         return self.validated
-    
+
     def setValidated(self):
         self.validated = True
 
@@ -227,8 +232,9 @@ class selectChallengeAnalyseIp(QDialog):
         choiceClass = self.comboBoxClass.currentIndex()
         choiceReservation = self.comboBoxReservation.currentIndex()
         choiceType = self.comboBoxType.currentIndex()
+        choiceCidr = self.spinBoxCidr.value()
         choiceTime = self.spinBoxTimeMin.value(), self.spinBoxTimeSec.value()
         self.accept()
-        self.choices = [choiceClass, choiceReservation, choiceType, choiceTime]
+        self.choices = [choiceClass, choiceReservation, choiceType, choiceCidr, choiceTime]
         self.setValidated()
 
