@@ -286,7 +286,8 @@ class selectChallengeAnalyseIp(QDialog):
             self.spinBoxCidr.setValue(12)
         elif targetC == "C" and value < 16 and value != 0:
             self.spinBoxCidr.setValue(16)
-        
+        elif targetC == "Aléatoire" and targetR in ["Privée", "Publique"]  and value != 0:
+            self.spinBoxCidr.setValue(0)
 
     def cidrChanged(self):
         value = self.spinBoxCidr.value()
@@ -319,6 +320,8 @@ class selectChallengeAnalyseIp(QDialog):
             self.comboBoxReservation.setCurrentIndex(0)
         elif targetC == "C" and value < 16 and value != 0:
             self.comboBoxClass.setCurrentIndex(0)
+            self.comboBoxReservation.setCurrentIndex(0)
+        elif targetC == "Aléatoire" and targetR in ["Privée", "Publique"] and value != 0:
             self.comboBoxReservation.setCurrentIndex(0)
 
     def setValidated(self):
