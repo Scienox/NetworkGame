@@ -113,7 +113,7 @@ class IP:
         return self.totalHost_
 
     def convertToBinary(self, vector):
-        matrixBinary = [[0 for bit in range(8)] for _ in range(4)]
+        matrixBinary = [[Bit() for bit in range(8)] for _ in range(4)]
         for octet in range(len(vector)):
             octetValue = vector[octet]
             refOctet = 0
@@ -121,60 +121,60 @@ class IP:
             for bit in range(len(self.octetBinary)):
                 bitValue = self.octetBinary[bit]
                 if refOctet + bitValue <= octetValue:
-                    matrixBinary[octet][bit] = 1
+                    matrixBinary[octet][bit].value = 1
                     refOctet += bitValue
         return matrixBinary
 
     def convertToDecimal(self, matrix):
-        vector = [0 for _ in range(4)]
+        vector = [Bit() for _ in range(4)]
         for octet in range(len(matrix)):
             refOctet = 0
             for bit in range(len(matrix[octet])):
-                if matrix[octet][bit] == 1:
+                if matrix[octet][bit].value == 1:
                     refOctet += self.octetBinary[bit]
             vector[octet] = refOctet
         return vector
 
     def buildSubMask(self):
         bitCurrent = 0
-        matrixBinary = [[0 for bit in range(8)] for _ in range(4)]
+        matrixBinary = [[Bit() for bit in range(8)] for _ in range(4)]
         for octet in range(len(matrixBinary)):
             for bit in range(len(matrixBinary[octet])):
                 if bitCurrent < self.cidr:
-                    matrixBinary[octet][bit] = 1
+                    matrixBinary[octet][bit].value = 1
                 bitCurrent += 1
             if bitCurrent == self.cidr:
                 break
         return matrixBinary
 
     def buildNetwork(self):
-        matrixBinary = [[0 for bit in range(8)] for _ in range(4)]
+        matrixBinary = [[Bit() for bit in range(8)] for _ in range(4)]
         for octet in range(len(self.subMaskBinary)):
             for bit in range(len(self.subMaskBinary[octet])):
-                if self.subMaskBinary[octet][bit] == 1:
+                if self.subMaskBinary[octet][bit].value == 1:
                     matrixBinary[octet][bit] = self.ipHostBinary[octet][bit]
                 else:
-                    matrixBinary[octet][bit] = 0
+                    matrixBinary[octet][bit].value = 0
         return matrixBinary
 
     def get_first_host_b(self):
         matrixBinary = deepcopy(self.networkBinary)
-        matrixBinary[-1][-1] = 1
+        matrixBinary[-1][-1].value = 1
         return matrixBinary
 
     def get_broadcast_b(self):
         matrixBinary = deepcopy(self.networkBinary)
         for octet in range(len(matrixBinary)-1, -1, -1):
             for bit in range(len(matrixBinary[len(matrixBinary)-1])-1, -1, -1):
-                if self.subMaskBinary[octet][bit] == 0:
-                    matrixBinary[octet][bit] = 1
+                if self.subMaskBinary[octet][bit].value == 0:
+                    matrixBinary[octet][bit].value = 1
                 else:
                     return matrixBinary
         return matrixBinary
 
     def get_last_host_b(self):
         matrixBinary = deepcopy(self.broadcastBinary)
-        matrixBinary[-1][-1] = 0
+        matrixBinary[-1][-1].value = 0
         return matrixBinary
 
     def get_next_network(self, cidr):
@@ -290,3 +290,23 @@ class IP:
             return "@broadcast"
         else:
             return "@Ipv4"
+
+
+class Bit:
+    def __init__(self, value=0):
+        self._value = self.value = value
+
+    def __repr__(self):
+        return f"{self.value}"
+
+    @property
+    def value(self):
+        return self._value
+    
+    @value.setter
+    def value(self, value):
+        if isinstance(value, int) and (value == 0 or value == 1):
+            self._value = value
+        else:
+            raise ValueError("Value is an int from 0 to 1")
+        
