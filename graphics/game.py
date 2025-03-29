@@ -284,19 +284,19 @@ class selectChallengeAnalyseIp(QDialog):
         targetR = self.comboBoxReservation.currentText()
         targetC = self.comboBoxClass.currentText()
         if (value != 24) and (targetR == "IETF"):
-            self.spinBoxCidr.restricted((0, 24))  # ok
+            self.spinBoxCidr.setValue(24)  # ok
 
         elif (targetC in ["D", "E"]) and (value < 4) and (value != 0):
             self.spinBoxCidr.restricted((0, 4))
         elif (targetC == "A") and (targetR == "Privée") and (value < 8) and (value != 0):
             self.spinBoxCidr.restricted((0, 8))  # ok
-        elif (targetR == "Privée") and (targetC == "B") and (value < 12) and (value != 0):
+        elif (targetC == "B") and (value < 12) and (value != 0):
             self.spinBoxCidr.restricted((0, 12))  # ok
         elif (targetR == "Privée") and (targetC == "C") and (value < 16) and (value != 0):
             self.spinBoxCidr.restricted((0, 16))  #ok
 
-        elif (targetC == "C") and (targetR not in ["Privée", "IETF"]) and (value != 0):
-            self.spinBoxCidr.restricted((0, 2))
+        elif (targetC == "C") and (targetR in ["Publique", "Aléatoire"]) and (value != 0):
+            self.spinBoxCidr.restricted((0, 13))
         elif (targetR == "Multicast") and (value < 4) and (value != 0):
             self.spinBoxCidr.restricted((0, 4))
         elif (targetC == "Aléatoire") and (targetR in ["Privée", "Publique"]):
