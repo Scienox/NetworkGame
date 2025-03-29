@@ -291,11 +291,11 @@ class selectChallengeAnalyseIp(QDialog):
         if targetC in ["D", "E"] and value < 4 and value != 0:
             self.spinBoxCidr.setValue(000)
         if targetC == "A" and targetR == "Privée" and value < 8 and value != 0:
-            self.spinBoxCidr.setValue(0 if value <= 7 else 8)  # ok
+            self.spinBoxCidr.setValue(0 if value == 7 else 8)  # ok
         elif targetR == "Privée" and targetC == "B" and value < 12 and value != 0:
-            self.spinBoxCidr.setValue(0 if value <= 11 else 12)  # ok
+            self.spinBoxCidr.setValue(0 if value == 11 else 12)  # ok
         elif targetR == "Privée" and targetC == "C" and value < 16 and value != 0:
-            self.spinBoxCidr.setValue(0 if value <= 15 else 16)  #ok
+            self.spinBoxCidr.setValue(0 if value == 15 else 16)  #ok
 
         elif targetC == "C" and value != 0:
             self.spinBoxCidr.setValue(-1 if value == 1 else 2)
