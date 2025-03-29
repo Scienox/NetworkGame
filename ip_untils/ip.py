@@ -70,6 +70,7 @@ class IP:
 
     @property
     def ipHost(self):
+        self.ipHost_ = [octet for octet in self.convertToString(self.ipHostBinary).split(".")]
         return self.convertToString(self.ipHost_)
     
     @property
@@ -111,6 +112,16 @@ class IP:
     @property
     def totalHost(self):
         return self.totalHost_
+    
+    def get_hostBinary(self):
+        bitCurrent = 1
+        host = []
+        for octet in range(4):
+            for bit in range(8):
+                if self.cidr < bitCurrent:
+                    host.append(self.ipHostBinary[octet][bit])
+                bitCurrent += 1
+        return host
 
     def convertToBinary(self, vector):
         matrixBinary = [[Bit() for bit in range(8)] for _ in range(4)]
