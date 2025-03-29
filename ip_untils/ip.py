@@ -242,8 +242,10 @@ class IP:
             return "E"
 
     def get_reservation(self):
-        if self.classIP == "A":
+        if self.classIP == "A":  # ok
             if 9 < self.network_[0] < 11:
+                if self.cidr < 8:
+                    return "mixed"
                 return "private"
             else:
                 return "public"
@@ -253,6 +255,8 @@ class IP:
             if (171 < self.network_[0] < 173) and (15 < self.network_[1] < 32):
                 return "private"
             else:
+                if self.cidr < 12:
+                    return "mixed"
                 return "public"
         elif self.classIP == "C":
             if (self.network == "192.0.2.0") and (self.cidr == 24):
@@ -265,10 +269,16 @@ class IP:
                 self.name_ = "(TEST-NET-3)"
                 return "IETF"
             elif (191 < self.network_[0] < 193) and (167 < self.network_[1] < 169):
+                if self.cidr < 16:
+                    return "mixed"
                 return "private"
             else:
+                if self.cidr < 13:
+                    return "mixed"
                 return "public"
         elif self.classIP == "D":
+            if self.cidr < 4:
+                raise ValueError("Multicast exceeded\nMinimal cidr is /4\n")
             return "multicast"
         else:
             return "None"
