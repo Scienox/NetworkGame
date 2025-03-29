@@ -5,7 +5,7 @@ from ip_untils.ip_edit import IpEdit
 from ip_untils.ip import IP
 from random import randint, choice
 from types import FunctionType
-from .custom_widget import CustomQSpinBox
+from .custom_widget import CustomQSpinBox, CustomQSpinBoxCidr
 
 
 class GameThreadIpAnalyse(QThread):
@@ -192,9 +192,7 @@ class selectChallengeAnalyseIp(QDialog):
         self.comboBoxType = QComboBox(self)
         self.comboBoxType.addItems([random, "@Réseau", "@Broadcast", "@Ip"])
 
-        self.spinBoxCidr = QSpinBox(self)
-        self.spinBoxCidr.setMinimum(0)
-        self.spinBoxCidr.setMaximum(30)
+        self.spinBoxCidr = CustomQSpinBoxCidr(self)
 
         layoutTime = QHBoxLayout(self)
         self.spinBoxTimeMin = CustomQSpinBox(self)
@@ -286,22 +284,22 @@ class selectChallengeAnalyseIp(QDialog):
         targetR = self.comboBoxReservation.currentText()
         targetC = self.comboBoxClass.currentText()
         if (value != 24) and (targetR == "IETF"):
-            self.spinBoxCidr.setValue(24)  # ok
+            self.spinBoxCidr.restricted((0, 24))  # ok
 
-        if targetC in ["D", "E"] and value < 4 and value != 0:
-            self.spinBoxCidr.setValue(000)
-        if targetC == "A" and targetR == "Privée" and value < 8 and value != 0:
-            self.spinBoxCidr.setValue(0 if value == 7 else 8)  # ok
-        elif targetR == "Privée" and targetC == "B" and value < 12 and value != 0:
-            self.spinBoxCidr.setValue(0 if value == 11 else 12)  # ok
-        elif targetR == "Privée" and targetC == "C" and value < 16 and value != 0:
-            self.spinBoxCidr.setValue(0 if value == 15 else 16)  #ok
+        elif (targetC in ["D", "E"]) and (value < 4) and (value != 0):
+            self.spinBoxCidr.restricted((0, 4))
+        elif (targetC == "A") and (targetR == "Privée") and (value < 8) and (value != 0):
+            self.spinBoxCidr.restricted((0, 8))  # ok
+        elif (targetR == "Privée") and (targetC == "B") and (value < 12) and (value != 0):
+            self.spinBoxCidr.restricted((0, 12))  # ok
+        elif (targetR == "Privée") and (targetC == "C") and (value < 16) and (value != 0):
+            self.spinBoxCidr.restricted((0, 16))  #ok
 
-        elif targetC == "C" and value != 0:
-            self.spinBoxCidr.setValue(-1 if value == 1 else 2)
-        elif targetR == "Multicast" and value < 4 and value != 0:
-            self.spinBoxCidr.setValue(0 if value == 3 else 4)
-        elif targetC == "Aléatoire" and targetR in ["Privée", "Publique"]:
+        elif (targetC == "C") and (targetR not in ["Privée", "IETF"]) and (value != 0):
+            self.spinBoxCidr.restricted((0, 2))
+        elif (targetR == "Multicast") and (value < 4) and (value != 0):
+            self.spinBoxCidr.restricted((0, 4))
+        elif (targetC == "Aléatoire") and (targetR in ["Privée", "Publique"]):
             self.spinBoxCidr.setValue(0)
 
     def setValidated(self):
