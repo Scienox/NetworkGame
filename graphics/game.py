@@ -5,7 +5,7 @@ from ip_untils.ip_edit import IpEdit
 from ip_untils.ip import IP
 from random import randint, choice
 from types import FunctionType
-from .custom_widget import CustomQSpinBox, CustomQSpinBoxCidr
+from .custom_widget import CustomSpinBoxTimer, CustomQSpinBoxCidr
 
 
 class GameThreadIpAnalyse(QThread):
@@ -116,14 +116,21 @@ class GameThreadIpAnalyse(QThread):
 
     def generateChallenge(self, loop, options):
         self.accept = True
+        randomO = "random"
+        randomCidrO = 0
         if len(options) != 0:
             class_, reservation, type_, cidr, time = options
 
             self.setTimeOut(time)
-            randomByte = [randint(0, 255) for _ in range(4)]
+            modelIp = "0.0.0.0"
+
             if type == "!random" and class_ == "!random" and reservation == "!random":
                 randomByte = []
             elif class_ == "A":
+                if reservation == randomO and type_ == randomO and cidr == randomCidrO:
+                    pass
+                elif reservation == randomO and type_ == "@Ip" and cidr == randomCidrO:
+                    print("ok")
                 randomByte[0] = f"{randint(0, 126)}"
                 if reservation == "Privée":
                     randomByte[0] = "10"
@@ -132,13 +139,7 @@ class GameThreadIpAnalyse(QThread):
                     afterPrivate = randint(11, 126)
                     randomByte[0] = choice([beforePrivate, afterPrivate])
 
-            randomIp = ".".join(f"{byte}" for byte in randomByte)
-            if cidr == 0:
-                randomCidr = randint(0, 30)
-            else:
-                randomCidr = cidr
-            self.ip = IP(randomIp, randomCidr)
-
+            self.ip = IP(randomIpStr, cidr if cidr != 0 else randint(0, 30))
             self._randomIp.setText(self.ip.ipHost)
             self._randomCidr.setText('/' + str(self.ip.cidr))
         else:
@@ -195,16 +196,10 @@ class selectChallengeAnalyseIp(QDialog):
         self.spinBoxCidr = CustomQSpinBoxCidr(self)
 
         layoutTime = QHBoxLayout(self)
-        self.spinBoxTimeMin = CustomQSpinBox(self)
-        self.spinBoxTimeMin.setMinimum(2)
-        self.spinBoxTimeMin.setMaximum(60)
-        self.spinBoxTimeMin.setValue(60)
-        self.spinBoxTimeSec = CustomQSpinBox(self)
-        self.spinBoxTimeSec.setMaximum(59)
+        customSpinBoxTime = CustomSpinBoxTimer(self)
+        self.spinBoxTimeMin, self.spinBoxTimeSec = customSpinBoxTime.min, customSpinBoxTime.sec
         layoutTime.addWidget(self.spinBoxTimeMin)
-        layoutTime.addWidget(QLabel("min"))
         layoutTime.addWidget(self.spinBoxTimeSec)
-        layoutTime.addWidget(QLabel("s"))
 
         layoutClose = QHBoxLayout(self)
         validateButton = QPushButton("Valider")

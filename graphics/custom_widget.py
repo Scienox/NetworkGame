@@ -47,3 +47,42 @@ class CustomQSpinBoxCidr(QSpinBox):
             self.setIncrement(-1)
         self.setValue(self._increment + self.value())
         self.selectAll()
+
+
+class CustomSpinBoxTimer:
+    def __init__(self, parent):
+        self._min = CustomQSpinBox(parent=parent)
+        self._min.setSuffix(" min")
+        self._min.setMaximum(60)
+        self._min.valueChanged.connect(self.addMin)
+        self._sec = CustomQSpinBox(parent=parent)
+        self._sec.setMinimum(-1)
+        self._sec.setSuffix(" s")
+        self._sec.valueChanged.connect(self.addSec)
+
+    @property
+    def min(self):
+        return self._min
+    
+    @property
+    def sec(self):
+        return self._sec
+    
+    def addSec(self):
+        def _adm():
+            self.min.setValue(self.min.value() - (1 if 0 < self.min.value() else 0))
+            self.sec.setValue(0)
+        if (self.min.value() < 60):
+            if 60 < self.sec.value():
+                self.min.setValue(self.min.value() + 1)
+                self.sec.setValue(0)
+            elif self.sec.value() == -1:
+                _adm()
+        elif self.sec.value() == -1:
+            _adm()
+        elif self.min.value() == 60:
+            self.sec.setValue(0)
+
+    def addMin(self):
+        if self.min.value() == 60:
+            self.sec.setValue(0)
