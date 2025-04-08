@@ -2,7 +2,8 @@ from PySide6.QtWidgets import (QLabel, QLineEdit, QPushButton, QDialog, QComboBo
 from PySide6.QtCore import (QThread, Signal, QEventLoop)
 from time import sleep
 from ip_untils.ip_edit import IpEdit
-from ip_untils.ip import IP
+from ip_untils.ip import IP, Reservation
+from ip_untils.ipManager import IpManager
 from random import randint, choice
 from types import FunctionType
 from .custom_widget import CustomSpinBoxTimer, CustomQSpinBoxCidr
@@ -115,35 +116,11 @@ class GameThreadIpAnalyse(QThread):
             return element
 
     def generateChallenge(self, loop, options):
+        klass, reservation, ttype, cidr, _ = options
         self.accept = True
-        randomO = "random"
-        randomCidrO = 0
         if len(options) != 0:
-            class_, reservation, type_, cidr, time = options
+            self.ip = IpManager(klass, reservation, ttype, cidr).generateRandomIp()
 
-            self.setTimeOut(time)
-            modelIp = "0.0.0.0"
-
-            if type == "!random" and class_ == "!random" and reservation == "!random":
-                randomByte = []
-            elif class_ == "A":
-                if reservation == randomO and type_ == randomO and cidr == randomCidrO:
-                    pass
-                elif reservation == randomO and type_ == "@Ip" and cidr == randomCidrO:
-                    print("ok")
-                randomByte[0] = f"{randint(0, 126)}"
-                if reservation == "Privée":
-                    randomByte[0] = "10"
-                elif reservation == "Publique":
-                    beforePrivate = randint(0, 9)
-                    afterPrivate = randint(11, 126)
-                    randomByte[0] = choice([beforePrivate, afterPrivate])
-
-            self.ip = IP(randomIpStr, cidr if cidr != 0 else randint(0, 30))
-            self._randomIp.setText(self.ip.ipHost)
-            self._randomCidr.setText('/' + str(self.ip.cidr))
-        else:
-            self.accept = False
 
         loop.quit()
 
