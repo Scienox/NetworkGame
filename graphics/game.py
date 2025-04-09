@@ -112,6 +112,8 @@ class GameThreadIpAnalyse(QThread):
             return "@network"
         elif element == '':
             return 'None'
+        elif element == "Aléatoire":
+            return None
         else:
             return element
 
@@ -119,8 +121,18 @@ class GameThreadIpAnalyse(QThread):
         klass, reservation, ttype, cidr, _ = options
         self.accept = True
         if len(options) != 0:
-            self.ip = IpManager(klass, reservation, ttype, cidr).generateRandomIp()
-
+            self.ip = IpManager(self.translationDetect(klass), self.translationDetect(reservation), self.translationDetect(ttype), cidr).generateRandomIp()
+            ipShow = ""
+            if ttype == "@Ipv4":
+                ipShow = self.ip.ipHost
+            elif ttype == "@Réseau":
+                ipShow = self.ip.network
+            elif ttype == "@Broadcast":
+                ipShow = self.ip.broadcast
+            else:
+                ipShow = choice([self.ip.broadcast, self.ip.network, self.ip.ipHost])
+            self._randomIp.setText(ipShow)
+            self._randomCidr.setText("/" + str(self.ip.cidr))
 
         loop.quit()
 

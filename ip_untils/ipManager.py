@@ -1,5 +1,5 @@
 from .helpfunction import *
-from random import choices, randint
+from random import choice, randint
 from .ip import IP, addBool
 
 
@@ -35,11 +35,13 @@ class IpManager:
             else:
                 return "128.0.0.0", "172.15.255.255", "173.0.0.0", "191.255.255.255"
         elif self.klass == 'C':
-            if self.reservation == 'public':
+            if self.reservation == 'private':
                 return "192.168.0.0", "192.168.255.255"
             else:
                 return "192.0.0.0", "192.167.255.255", "193.0.0.0", "223.255.255.255"
-            
+        else:
+            return self.getRangeAvaible()
+
     def selectFromRange(self):
         def buildVector(rRange):
             minimal = vectorStrToInt(rRange[0].split('.'))
@@ -52,7 +54,7 @@ class IpManager:
         if len(ranges) != 2:
             firstSet = ranges[0], ranges[1]
             secondSet = ranges[2], ranges[3]
-            setSelected = choices([firstSet, secondSet])
+            setSelected = choice([firstSet, secondSet])
             ranges = setSelected
         buildVector(ranges)
         return ".".join(str(octet) for octet in vectorSelected)
@@ -67,12 +69,11 @@ class IpManager:
             if self.cidr < 8:
                 setklass.pop()
         if not self.klass:
-            self.klass = choices(setklass)
+            self.klass = choice(setklass)
         if not self.reservation:
-            self.reservation = choices(["private", "public"])
+            self.reservation = choice(["private", "public"])
         if not self.cidr:
             self.cidr = randint(self.getMinimalCidr(), 30)
-
         ip = IP(self.selectFromRange(), self.cidr)
         if self.ttype == "@Ipv4":
             randomHost(ip)
