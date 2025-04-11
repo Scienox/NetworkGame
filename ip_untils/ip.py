@@ -1,4 +1,5 @@
 from copy import deepcopy
+from .helpfunction import *
 
 
 class IP:
@@ -10,22 +11,22 @@ class IP:
         self.totalHost_ = (2**(32 - self.cidr)) - 2
         self.name_ = name
 
-        self.ipHost_ = [int(octet) for octet in ipHost.split(".")]
-        self.ipHostBinary = self.convertToBinary(self.ipHost_)
+        self.ipHost_ = convertStrToDecimal(ipHost)
+        self.ipHostBinary = self.convertDecimalToBinary(self.ipHost_)
         if len(self.ipHost_) != 4:
             raise ValueError("Ip is composed of 4 Bytes and 32 bits ex:192.168.0.0")
         self.__debugIp()        
         self.subMaskBinary = self.buildSubMask()
-        self.subMask_ = self.convertToDecimal(self.subMaskBinary)
+        self.subMask_ = self.convertBinaryToDecimal(self.subMaskBinary)
         self.networkBinary = self.buildNetwork()
-        self.network_ = self.convertToDecimal(self.networkBinary)
+        self.network_ = self.convertBinaryToDecimal(self.networkBinary)
 
         self.firstHostBinary = self.get_first_host_b()
-        self.firstHost_ = self.convertToDecimal(self.firstHostBinary)
+        self.firstHost_ = self.convertBinaryToDecimal(self.firstHostBinary)
         self.broadcastBinary = self.get_broadcast_b()
-        self.broadcast_ = self.convertToDecimal(self.broadcastBinary)
+        self.broadcast_ = self.convertBinaryToDecimal(self.broadcastBinary)
         self.lastHostBinary = self.get_last_host_b()
-        self.lastHost_ = self.convertToDecimal(self.lastHostBinary)
+        self.lastHost_ = self.convertBinaryToDecimal(self.lastHostBinary)
 
         self.type_ = self.type_detect()
         self.class_ = self.get_class()
@@ -78,34 +79,33 @@ class IP:
 
     @property
     def ipHost(self):
-        decimal = self.convertToDecimal(self.ipHostBinary)
-        sequence = self.convertToString(decimal)
-        self.ipHost_ = [int(octet) for octet in sequence.split(".")]
-        return self.convertToString(self.ipHost_)
-    
+        self.ipHost_ = self.convertBinaryToDecimal(self.ipHostBinary)
+        return self.convertDecimalToString(self.ipHost_)
+
     @property
     def name(self):
         return self.name_
 
     @property
     def subMask(self):
-        return self.convertToString(self.subMask_)
+        return self.convertDecimalToString(self.subMask_)
 
     @property
     def network(self):
-        return self.convertToString(self.network_)
+        self.network_ = self.convertBinaryToDecimal(self.networkBinary)
+        return self.convertDecimalToString(self.network_)
 
     @property
     def firstHost(self):
-        return self.convertToString(self.firstHost_)
+        return self.convertDecimalToString(self.firstHost_)
 
     @property
     def broadcast(self):
-        return self.convertToString(self.broadcast_)
+        return self.convertDecimalToString(self.broadcast_)
 
     @property
     def lastHost(self):
-        return self.convertToString(self.lastHost_)
+        return self.convertDecimalToString(self.lastHost_)
 
     @property
     def type(self):
@@ -124,47 +124,18 @@ class IP:
         return self.totalHost_
     
     def get_bitsHost(self):
-        bitCurrent = 1
-        host = []
-        for octet in range(4):
-            for bit in range(8):
-                if self.cidr < bitCurrent:
-                    host.append(self.ipHostBinary[octet][bit])
-                bitCurrent += 1
-        return host
-    
+        return get_bitsHost(self)
+
     def get_bitsNetwork(self):
-        bitCurrent = 1
-        network = []
-        for octet in range(4):
-            for bit in range(8):
-                if bitCurrent <= self.cidr:
-                    network.append(self.ipHostBinary[octet][bit])
-                bitCurrent += 1
-        return network
+        return get_bitsNetwork(self)
 
-    def convertToBinary(self, vector):
-        matrixBinary = [[Bit() for bit in range(8)] for _ in range(4)]
-        for octet in range(len(vector)):
-            octetValue = vector[octet]
-            refOctet = 0
+    def convertDecimalToBinary(self, vector):
+        matrix = convertDecimalToBinary(vector)
+        return [[Bit(matrix[octet][bit]) for bit in range(8)] for octet in range(4)]
 
-            for bit in range(len(self.octetBinary)):
-                bitValue = self.octetBinary[bit]
-                if refOctet + bitValue <= octetValue:
-                    matrixBinary[octet][bit].value = 1
-                    refOctet += bitValue
-        return matrixBinary
-
-    def convertToDecimal(self, matrix):
-        vector = [Bit() for _ in range(4)]
-        for octet in range(len(matrix)):
-            refOctet = 0
-            for bit in range(len(matrix[octet])):
-                if matrix[octet][bit].value == 1:
-                    refOctet += self.octetBinary[bit]
-            vector[octet] = refOctet
-        return vector
+    def convertBinaryToDecimal(self, matrix):
+        matrix = [[matrix[octet][bit].value for bit in range(8)] for octet in range(4)]
+        return convertBinaryToDecimal(matrix)
 
     def buildSubMask(self):
         bitCurrent = 0
@@ -209,49 +180,57 @@ class IP:
         return matrixBinary
 
     def get_next_network(self, cidr):
-        """
-        Il n'est pas possible de générer un réseau suivant qui ne fait pas partie de la même class
-        """
+        nextNetwork = IP(self.network, self.cidr)
+        addBool(nextNetwork.get_bitsNetwork())
+        nextNetwork = IP(nextNetwork.network, cidr)
+        if nextNetwork.class_ != self.class_:
+            raise ValueError("The next network belongs to a different class")
+        elif nextNetwork.reservation != self.reservation:
+            raise ValueError("The next network belongs to a different reservation")
+        return nextNetwork
 
-        def To256(octet_l):
-            if nextNetwork[octet_l] + 1 < 256:
-                nextNetwork[octet_l+1] = 0
-                nextNetwork[octet_l] += 1
-                return 
-            else:
-                nextNetwork[octet_l+1] = 0
-                return To256(octet_l-1)
 
-        magic_table = {
-            "8-16-24-32": 1,
-            "7-15-23-31": 2,
-            "6-14-22-30": 4,
-            "5-13-21-29": 8,
-            "4-12-20-28": 16,
-            "3-11-19-27": 32,
-            "2-10-18-26": 64,
-            "1-9-17-25": 128
-        }
+    """    def get_next_network(self, cidr):
 
-        nextNetwork = deepcopy(self.network_)
-        for key in magic_table.keys():
-            if str(self.cidr) in key:
-                vectorKey = key.split("-")
-                for octet in range(len(vectorKey)):
-                    if str(self.cidr) == vectorKey[octet]:
-                        if nextNetwork[octet] + magic_table[key] < 256:
-                            nextNetwork[octet] += magic_table[key]
-                        else:
-                            To256(octet-1)
-                        nextNetworkBuilded = IP(self.convertToString(nextNetwork), cidr)
-                        if nextNetworkBuilded.class_ != self.class_:
-                            raise ValueError("The next network belongs to a different class")
-                        elif nextNetworkBuilded.reservation != self.reservation:
-                            raise ValueError("The next network belongs to a different reservation")
-                        return nextNetworkBuilded
+            def To256(octet_l):
+                if nextNetwork[octet_l] + 1 < 256:
+                    nextNetwork[octet_l+1] = 0
+                    nextNetwork[octet_l] += 1
+                    return 
+                else:
+                    nextNetwork[octet_l+1] = 0
+                    return To256(octet_l-1)
 
-    def convertToString(self, vector):
-        return ".".join(str(octet) for octet in vector)
+            magic_table = {
+                "8-16-24-32": 1,
+                "7-15-23-31": 2,
+                "6-14-22-30": 4,
+                "5-13-21-29": 8,
+                "4-12-20-28": 16,
+                "3-11-19-27": 32,
+                "2-10-18-26": 64,
+                "1-9-17-25": 128
+            }
+
+            nextNetwork = deepcopy(self.network_)
+            for key in magic_table.keys():
+                if str(self.cidr) in key:
+                    vectorKey = key.split("-")
+                    for octet in range(len(vectorKey)):
+                        if str(self.cidr) == vectorKey[octet]:
+                            if nextNetwork[octet] + magic_table[key] < 256:
+                                nextNetwork[octet] += magic_table[key]
+                            else:
+                                To256(octet-1)
+                            nextNetworkBuilded = IP(self.convertDecimalToString(nextNetwork), cidr)
+                            if nextNetworkBuilded.class_ != self.class_:
+                                raise ValueError("The next network belongs to a different class")
+                            elif nextNetworkBuilded.reservation != self.reservation:
+                                raise ValueError("The next network belongs to a different reservation")
+                            return nextNetworkBuilded"""
+
+    def convertDecimalToString(self, vector):
+        return convertDecimalToStr(vector)
     
     def __debugIp(self):
         for octet in self.ipHost_:
@@ -320,25 +299,15 @@ class Reservation:
     @property
     def cidr(self):
         return self._cidrIp
-    
-    def getMinimalCidr(self):
-        if self.classIp == "A":
-            return 8, 8
-        elif self.classIp == "B":
-            return 16, 12
-        elif self.classIp == "C":
-            return 24, 16
-        else:
-            return 4, 4
 
     @property  
     def isBadCidrForPrivate(self):
-        privateCidr, _ = self.getMinimalCidr()
+        privateCidr, _ = getMinimalCidr(self.classIp)
         return self.cidr < privateCidr
     
     @property
     def isBadCidrForPublic(self):
-        _, publicCidr = self.getMinimalCidr()
+        _, publicCidr = getMinimalCidr(self.classIp)
         return self.cidr < publicCidr
 
     def _detectReservation(self):
