@@ -84,14 +84,7 @@ class IpManager:
         return self._getMinimalCidr()[current]
 
     def _getMinimalCidr(self):
-        if self.klass == "A":
-            return 8, 8
-        elif self.klass == "B":
-            return 16, 12
-        elif self.klass == "C":
-            return 24, 16
-        else:
-            return 4, 4
+        return getMinimalCidr()
 
 
 def vectorStrToInt(vectorStr):
