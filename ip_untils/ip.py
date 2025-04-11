@@ -269,6 +269,14 @@ class Bit:
 
     def __repr__(self):
         return f"{self.value}"
+    
+    def __eq__(self, value):
+        if isinstance(value, int):
+            return self.value == value
+        elif isinstance(value, Bit):
+            return self.value == value.value
+        else:
+            return NotImplemented
 
     @property
     def value(self):
