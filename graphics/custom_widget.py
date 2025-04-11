@@ -54,11 +54,12 @@ class CustomSpinBoxTimer:
         self._min = CustomQSpinBox(parent=parent)
         self._min.setSuffix(" min")
         self._min.setMaximum(60)
-        self._min.valueChanged.connect(self.addMin)
+        self._min.valueChanged.connect(self.changeMinute)
         self._sec = CustomQSpinBox(parent=parent)
-        self._sec.setMinimum(-1)
+        self._sec.setMaximum(60)
         self._sec.setSuffix(" s")
-        self._sec.valueChanged.connect(self.addSec)
+        self._sec.valueChanged.connect(self.changeSecond)
+        self.min.setValue(2)
 
     @property
     def min(self):
@@ -68,21 +69,13 @@ class CustomSpinBoxTimer:
     def sec(self):
         return self._sec
     
-    def addSec(self):
-        def _adm():
-            self.min.setValue(self.min.value() - (1 if 0 < self.min.value() else 0))
-            self.sec.setValue(0)
-        if (self.min.value() < 60):
-            if 60 < self.sec.value():
-                self.min.setValue(self.min.value() + 1)
-                self.sec.setValue(0)
-            elif self.sec.value() == -1:
-                _adm()
-        elif self.sec.value() == -1:
-            _adm()
+    def changeSecond(self):
+        if self.sec.value() < 30 and self.min.value() == 0:
+            self.sec.setValue(30)
         elif self.min.value() == 60:
             self.sec.setValue(0)
 
-    def addMin(self):
+    def changeMinute(self):
         if self.min.value() == 60:
             self.sec.setValue(0)
+        self.changeSecond()
