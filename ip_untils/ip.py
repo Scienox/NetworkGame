@@ -59,9 +59,13 @@ class IP:
     def __iter__(self):
         referenceIp = IP(self.network, self.cidr)
         hostBits = referenceIp.get_bitsHost()
+        limit = 1
         for _ in range(2**len(hostBits)):
             yield referenceIp.ipHost
             addBool(hostBits)
+            limit += 1
+            if 5000 < limit:
+                break
 
     def __contains__(self, otherIp):
         if isinstance(otherIp, IP):
