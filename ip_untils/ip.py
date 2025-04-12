@@ -65,11 +65,15 @@ class IP:
 
     def __contains__(self, otherIp):
         if isinstance(otherIp, IP):
-            if self.cidr <= otherIp.cidr:
-                for address in self:
-                    if otherIp.network == address:
-                        return True
+            otherNetworkBits = otherIp.get_bitsNetwork()
+            selfNetworkBits = self.get_bitsNetwork()
+            if len(otherNetworkBits) < len(selfNetworkBits):
                 return False
+            else:
+                for bit in range(len(selfNetworkBits)):
+                    if selfNetworkBits[bit] != otherNetworkBits[bit]:
+                        return False
+                return True            
         else:
             return NotImplemented
 
