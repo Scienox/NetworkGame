@@ -118,21 +118,13 @@ class GameThreadIpAnalyse(QThread):
             return element
 
     def generateChallenge(self, loop, options):
-        klass, reservation, ttype, cidr, _ = options
+        klass, reservation, ttype, cidr, time = options
         self.accept = True
         if len(options) != 0:
             self.ip = IpManager(self.translationDetect(klass), self.translationDetect(reservation), self.translationDetect(ttype), cidr).generateRandomIp()
-            ipShow = ""
-            if ttype == "@Ipv4":
-                ipShow = self.ip.ipHost
-            elif ttype == "@Réseau":
-                ipShow = self.ip.network
-            elif ttype == "@Broadcast":
-                ipShow = self.ip.broadcast
-            else:
-                ipShow = choice([self.ip.broadcast, self.ip.network, self.ip.ipHost])
-            self._randomIp.setText(ipShow)
+            self._randomIp.setText(self.ip.ipHost)
             self._randomCidr.setText("/" + str(self.ip.cidr))
+            self._timeOut = time
 
         loop.quit()
 

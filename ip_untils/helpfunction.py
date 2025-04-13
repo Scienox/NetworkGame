@@ -111,3 +111,33 @@ def get_bitsNetwork(ip):
                     network.append(ip.ipHostBinary[octet][bit])
                 bitCurrent += 1
         return network
+
+
+def isInIETF(vectorDecimal, cidr):
+        test_net_1 = [192, 0, 0, 0]
+        test_net_2 = [198, 51, 0, 0]
+        test_net_3 = [203, 0, 0, 0]
+        if vectorDecimal[0:2] == test_net_1[0:2]:
+            # cidr 23 minimum
+            if cidr < 23:
+                return True
+        elif vectorDecimal[0:2] == test_net_2[0:2]:
+            # cidr 18 minimum
+            if cidr < 18 or vectorDecimal[2] in [n for n in range(64, 128)]:
+                return True
+        elif vectorDecimal[0:2] == test_net_3[0:2]:
+            # cidr 18 minimum
+            if cidr < 18:
+                return True
+        return False
+
+
+def excludeIETF(vectorDecimal, cidr, choice):
+        if isInIETF(vectorDecimal, cidr):
+            if vectorDecimal[0] == 192:
+                vectorDecimal[1] = choice([n for n in range(1, 256)])
+            elif vectorDecimal[0] == 198:
+                vectorDecimal[1] = choice([n for n in range(0, 256) if n != 51])
+                vectorDecimal[2] = choice([n for n in range(0, 64)] + [n for n in range(128, 256)])
+            elif vectorDecimal[0] == 203:
+                vectorDecimal[1] = choice([n for n in range(1, 256)])

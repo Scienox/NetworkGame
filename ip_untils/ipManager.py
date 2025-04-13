@@ -36,7 +36,7 @@ class IpManager:
                 return "128.0.0.0", "172.15.255.255", "173.0.0.0", "191.255.255.255"
         elif self.klass == 'C':
             if self.reservation == 'private':
-                return "192.168.0.0", "192.168.255.255"
+                return "192.168.0.0", "192.168.255.255"            
             else:
                 return "192.0.0.0", "192.167.255.255", "193.0.0.0", "223.255.255.255"
         else:
@@ -49,6 +49,8 @@ class IpManager:
             for octet in range(4):
                 vectorSelected.append(randint(minimal[octet], maximal[octet]))
 
+        if self.reservation == "IETF":
+            return choice(["192.0.2.0", "198.51.100.0", "203.0.113.0"])
         vectorSelected = list()
         ranges = self.getRangeReservation()
         if len(ranges) != 2:
@@ -57,6 +59,8 @@ class IpManager:
             setSelected = choice([firstSet, secondSet])
             ranges = setSelected
         buildVector(ranges)
+        if self.klass == "C" and self.reservation != "IETF":
+            excludeIETF(vectorSelected, self.cidr, choice)
         return ".".join(str(octet) for octet in vectorSelected)
 
     def generateRandomIp(self):
@@ -75,16 +79,25 @@ class IpManager:
         if not self.cidr:
             self.cidr = randint(self.getMinimalCidr(), 30)
         ip = IP(self.selectFromRange(), self.cidr)
+        randomHost(ip)
+        ipv4 = IP(ip.ipHost, ip.cidr)
+        ipNetwork = IP(ip.network, ip.cidr)
+        ipBroadcast = IP(ip.broadcast, ip.cidr)
         if self.ttype == "@Ipv4":
-            randomHost(ip)
-        return ip
+            return ipv4
+        elif self.ttype == "@network":
+            return ipNetwork
+        elif self.ttype == "@broadcast":
+            return ipBroadcast
+        else:
+            return choice([ipv4, ipNetwork, ipBroadcast])
     
     def getMinimalCidr(self, ip=None):
         current = 0 if self.reservation == 'private' else 1
         return self._getMinimalCidr()[current]
 
     def _getMinimalCidr(self):
-        return getMinimalCidr()
+        return getMinimalCidr(self.klass)
 
 
 def vectorStrToInt(vectorStr):
