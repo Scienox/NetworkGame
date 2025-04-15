@@ -118,9 +118,9 @@ class GameThreadIpAnalyse(QThread):
             return element
 
     def generateChallenge(self, loop, options):
-        klass, reservation, ttype, cidr, time = options
         self.accept = True
         if len(options) != 0:
+            klass, reservation, ttype, cidr, time = options
             self.ip = IpManager(self.translationDetect(klass), self.translationDetect(reservation), self.translationDetect(ttype), cidr).generateRandomIp()
             self._randomIp.setText(self.ip.ipHost)
             self._randomCidr.setText("/" + str(self.ip.cidr))
@@ -129,7 +129,7 @@ class GameThreadIpAnalyse(QThread):
         loop.quit()
 
     def selectChallMessage(self):
-        options = selectChallengeAnalyseIp(self.parent())
+        options = SelectChallengeAnalyseIp(self.parent())
         self.validateSignal.emit(options.choices if options else [])
 
     def validate(self):
@@ -156,7 +156,7 @@ class GameThreadIpAnalyse(QThread):
         self.ipEdit == self.ip
 
 
-class selectChallengeAnalyseIp(QDialog):
+class SelectChallengeAnalyseIp(QDialog):
     def __init__(self, window):
         super().__init__(parent=window)
         self.validated = False
