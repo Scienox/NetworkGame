@@ -80,13 +80,13 @@ def cidrRequiermentForSubnetMask(subnetMask):
     return cidr
 
 
-def get_bitsHost(ip):
+def get_bitsHost(matrix, cidr):
         bitCurrent = 1
         host = []
         for octet in range(4):
             for bit in range(8):
-                if ip.cidr < bitCurrent:
-                    host.append(ip.ipHostBinary[octet][bit])
+                if cidr < bitCurrent:
+                    host.append(matrix[octet][bit])
                 bitCurrent += 1
         return host
 
@@ -102,42 +102,68 @@ def getMinimalCidr(c_class):
             return 4, 4
 
 
-def get_bitsNetwork(ip):
+def get_bitsNetwork(matrix, cidr):
         bitCurrent = 1
         network = []
         for octet in range(4):
             for bit in range(8):
-                if bitCurrent <= ip.cidr:
-                    network.append(ip.ipHostBinary[octet][bit])
+                if bitCurrent <= cidr:
+                    network.append(matrix[octet][bit])
                 bitCurrent += 1
         return network
 
 
-def isInIETF(vectorDecimal, cidr):
-        test_net_1 = [192, 0, 0, 0]
-        test_net_2 = [198, 51, 0, 0]
-        test_net_3 = [203, 0, 0, 0]
-        if vectorDecimal[0:2] == test_net_1[0:2]:
-            # cidr 23 minimum
-            if cidr < 23:
-                return True
-        elif vectorDecimal[0:2] == test_net_2[0:2]:
-            # cidr 18 minimum
-            if cidr < 18 or vectorDecimal[2] in [n for n in range(64, 128)]:
-                return True
-        elif vectorDecimal[0:2] == test_net_3[0:2]:
-            # cidr 18 minimum
-            if cidr < 18:
-                return True
+def IETF_is_in(vectorDecimal, cidr):
+        test_net_1 = convertDecimalToBinary([192, 0, 2, 0])  # 192.0.2.0 /24
+        test_net_2 = convertDecimalToBinary([198, 51, 100, 0])  # 198.51.100.0 /24
+        test_net_3 = convertDecimalToBinary([203, 0, 113, 0])  # 203.0.113.0 /24
+        networkRef = convertDecimalToBinary(vectorDecimal)
+        if isInThisNetwork(networkRef, cidr, test_net_1, 24):
+            return True
+        elif isInThisNetwork(networkRef, cidr, test_net_2, 24):
+            return True
+        elif isInThisNetwork(networkRef, cidr, test_net_3, 24):
+            return True
         return False
 
 
 def excludeIETF(vectorDecimal, cidr, choice):
-        if isInIETF(vectorDecimal, cidr):
-            if vectorDecimal[0] == 192:
-                vectorDecimal[1] = choice([n for n in range(1, 256)])
-            elif vectorDecimal[0] == 198:
-                vectorDecimal[1] = choice([n for n in range(0, 256) if n != 51])
-                vectorDecimal[2] = choice([n for n in range(0, 64)] + [n for n in range(128, 256)])
-            elif vectorDecimal[0] == 203:
-                vectorDecimal[1] = choice([n for n in range(1, 256)])
+        byte1 = vectorDecimal[0]
+        byte2 = vectorDecimal[1]
+        byte3 = vectorDecimal[2]
+        if IETF_is_in(vectorDecimal, cidr):
+            if byte1 == 192:
+                if byte2 == 0:
+                    if cidr < 22:
+                        vectorDecimal[1] = setRandomOctet(choice, [0])
+                    elif byte3 == 2:
+                         vectorDecimal[2] = setRandomOctet(choice, [2])
+            elif byte1 == 198:
+                if byte2 == 51:
+                    eexcept = [n for n in range(64, 128)]
+                    if cidr < 18: 
+                        vectorDecimal[1] = setRandomOctet(choice, [51])
+                    elif byte3 in eexcept:
+                        vectorDecimal[2] = setRandomOctet(choice, eexcept)
+            elif byte1 == 203:
+                if byte2 == 0:
+                    eexcept = [n for n in range(64, 128)]
+                    if cidr < 18:
+                        vectorDecimal[1] = setRandomOctet(choice, [0])
+                    elif byte3 in eexcept:
+                        vectorDecimal[2] = setRandomOctet(choice, eexcept)
+
+
+def isInThisNetwork(networkRef, cidrRef, networkFocus, cidrFocus):
+    bitsRef = get_bitsNetwork(networkRef, cidrRef)
+    bitsFocus = get_bitsNetwork(networkFocus, cidrFocus)
+    if len(bitsRef) < len(bitsFocus):
+        for bit in range(len(bitsRef)):
+            if bitsRef[bit] != bitsFocus[bit]:
+                return False
+        return True
+    return False
+
+
+def setRandomOctet(choice, eexcept):
+    return choice([n for n in range(256) if n not in eexcept])

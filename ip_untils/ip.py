@@ -69,7 +69,8 @@ class IP:
 
     def __contains__(self, otherIp):
         if isinstance(otherIp, IP):
-            otherNetworkBits = otherIp.get_bitsNetwork()
+            return isInThisNetwork(self.networkBinary, self.cidr, otherIp.networkBinary, otherIp.cidr)
+            """otherNetworkBits = otherIp.get_bitsNetwork()
             selfNetworkBits = self.get_bitsNetwork()
             if len(otherNetworkBits) < len(selfNetworkBits):
                 return False
@@ -77,7 +78,7 @@ class IP:
                 for bit in range(len(selfNetworkBits)):
                     if selfNetworkBits[bit] != otherNetworkBits[bit]:
                         return False
-                return True            
+                return True   """         
         else:
             return NotImplemented
 
@@ -132,10 +133,10 @@ class IP:
         return self.totalHost_
     
     def get_bitsHost(self):
-        return get_bitsHost(self)
+        return get_bitsHost(self.ipHostBinary, self.cidr)
 
     def get_bitsNetwork(self):
-        return get_bitsNetwork(self)
+        return get_bitsNetwork(self.networkBinary, self.cidr)
 
     def convertDecimalToBinary(self, vector):
         matrix = convertDecimalToBinary(vector)
@@ -192,9 +193,9 @@ class IP:
         addBool(nextNetwork.get_bitsNetwork())
         nextNetwork = IP(nextNetwork.network, cidr)
         if nextNetwork.class_ != self.class_:
-            raise ValueError("The next network belongs to a different class")
+            return 'None' #  raise ValueError("The next network belongs to a different class")
         elif nextNetwork.reservation != self.reservation:
-            raise ValueError("The next network belongs to a different reservation")
+            return 'None' #  raise ValueError("The next network belongs to a different reservation")
         return nextNetwork
 
 
@@ -371,8 +372,11 @@ class Reservation:
             if self.isBadCidrForPrivate:
                 raise ValueError("Multicast exceeded\nMinimal cidr is /4\n")
             return "multicast"
+        elif self.classIp == "E":
+            if self.isBadCidrForPrivate:
+                raise ValueError("Class E exceeded\nMinimal cidr is /4\n")
         else:
-            return "None"
+            return "localhost"
 
 
 def addBool(sequence, current=-1):
