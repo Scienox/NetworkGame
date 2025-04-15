@@ -1,6 +1,6 @@
 from .helpfunction import *
 from random import choice, randint
-from .ip import IP, addBool
+from .ip import IP, addBool, Reservation
 
 
 class IpManager:
@@ -40,6 +40,8 @@ class IpManager:
             else:
                 return "192.0.0.0", "192.167.255.255", "193.0.0.0", "223.255.255.255"
         else:
+            if self.reservation == 'localhost':
+                return "127.0.0.0", "127.255.255.255"
             return self.getRangeAvaible()
 
     def selectFromRange(self):
@@ -75,7 +77,8 @@ class IpManager:
         if not self.klass:
             self.klass = choice(setklass)
         if not self.reservation:
-            self.reservation = choice(["private", "public"])
+            # analyse reservation forgot
+            self.reservation = choice(["private", "public"])  # localhost, IETF, multicastss
         if not self.cidr:
             self.cidr = randint(self.getMinimalCidr(), 30)
         ip = IP(self.selectFromRange(), self.cidr)
