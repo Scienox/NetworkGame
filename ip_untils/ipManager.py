@@ -1,6 +1,6 @@
 from .helpfunction import *
 from random import choice, randint
-from .ip import IP, addBool, Reservation
+from .ip import IP, addBool
 
 
 class IpManager:
@@ -77,10 +77,21 @@ class IpManager:
         if not self.klass:
             self.klass = choice(setklass)
         if not self.reservation:
-            # analyse reservation forgot
-            self.reservation = choice(["private", "public"])  # localhost, IETF, multicastss
+            multichoice = ["private", "public"]
+            if self.klass == "C":
+                multichoice += ["IETF"]
+            elif self.klass == "None":
+                multichoice = ['localhost']
+            elif self.klass == "D":
+                multichoice = ["multicast"]
+            elif self.klass == "E":
+                multichoice = ["None"]
+            self.reservation = choice(multichoice)
         if not self.cidr:
-            self.cidr = randint(self.getMinimalCidr(), 30)
+            if self.reservation == "IETF":
+                self.cidr = 24
+            else: self.cidr = randint(self.getMinimalCidr(), 30)
+
         ip = IP(self.selectFromRange(), self.cidr)
         randomHost(ip)
         ipv4 = IP(ip.ipHost, ip.cidr)
