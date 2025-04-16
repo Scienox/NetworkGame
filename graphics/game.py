@@ -124,7 +124,7 @@ class GameThreadIpAnalyse(QThread):
             self.ip = IpManager(self.translationDetect(klass), self.translationDetect(reservation), self.translationDetect(ttype), cidr).generateRandomIp()
             self._randomIp.setText(self.ip.ipHost)
             self._randomCidr.setText("/" + str(self.ip.cidr))
-            self._timeOut = time
+            self.setTimeOut(time)
 
         loop.quit()
 
@@ -236,6 +236,7 @@ class SelectChallengeAnalyseIp(QDialog):
                 self.spinBoxCidr.setValue(4)
 
     def reservationChanged(self):
+        # localhost minimal cidr is 8
         targetR = self.comboBoxReservation.currentText()
         targetC = self.comboBoxClass.currentText()
         value = self.spinBoxCidr.value()
