@@ -99,11 +99,18 @@ class IpEdit:
             return True
         return False
 
-    def ifNextNetwork(self, ip):
-        if self.nextNetwork == ip.get_next_network(30).network:
-            self.score_ += 1
-            return True
-        return False
+    def ifNextNetwork(self, ip:IP):
+        nextNetwork = ip.get_next_network(30)
+        if isinstance(nextNetwork, IP):
+            if self.nextNetwork == nextNetwork.network:
+                self.score_ += 1
+                return True
+        else:
+            if self.nextNetwork == nextNetwork:
+                self.score_ += 1
+                return True
+            return False
+
 
     def ifClassIP(self, ip):
         if self.classIP == ip.classIP:
