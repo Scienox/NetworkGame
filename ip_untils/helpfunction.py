@@ -92,7 +92,7 @@ def get_bitsHost(matrix, cidr):
 
 
 def getMinimalCidr(c_class):
-        if c_class == "A":
+        if c_class == "A" or "None":
             return 8, 8
         elif c_class == "B":
             return 16, 12
