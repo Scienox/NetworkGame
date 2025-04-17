@@ -92,7 +92,7 @@ def get_bitsHost(matrix, cidr):
 
 
 def getMinimalCidr(c_class):
-        if c_class == "A" or "None":
+        if (c_class == "A") or (c_class == "None"):
             return 8, 8
         elif c_class == "B":
             return 16, 12
@@ -100,6 +100,14 @@ def getMinimalCidr(c_class):
             return 24, 16
         else:
             return 4, 4
+
+
+def getMinimalCidrForPrivate(c_class):
+    return getMinimalCidr(c_class)[1]
+
+
+def getMinimalCidrForPublic(c_class):
+    return getMinimalCidr(c_class)[0]
 
 
 def get_bitsNetwork(matrix, cidr):
@@ -167,3 +175,13 @@ def isInThisNetwork(networkRef, cidrRef, networkFocus, cidrFocus):
 
 def setRandomOctet(choice, eexcept):
     return choice([n for n in range(256) if n not in eexcept])
+
+
+def isBadCidrForPrivate(klass, cidr):
+        privateCidr = getMinimalCidrForPrivate(klass)
+        return cidr < privateCidr
+
+
+def isBadCidrForPublic(klass, cidr):
+        publicCidr = getMinimalCidrForPublic(klass)
+        return cidr < publicCidr

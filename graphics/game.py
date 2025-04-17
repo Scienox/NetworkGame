@@ -2,10 +2,8 @@ from PySide6.QtWidgets import (QLabel, QLineEdit, QPushButton, QDialog, QComboBo
 from PySide6.QtCore import (QThread, Signal, QEventLoop)
 from time import sleep
 from ip_untils.ip_edit import IpEdit
-from ip_untils.ip import IP, Reservation
+from ip_untils.helpfunction import *
 from ip_untils.ipManager import IpManager
-from random import randint, choice
-from types import FunctionType
 from .custom_widget import CustomSpinBoxTimer, CustomQSpinBoxCidr
 
 
@@ -233,14 +231,37 @@ class SelectChallengeAnalyseIp(QDialog):
         else:
             self.comboBoxReservation.addItems([random])
             if self.spinBoxCidr.value() < 4 and self.spinBoxCidr.value() != 0:
-                self.spinBoxCidr.setValue(4)
+                self.spinBoxCidr.restricted((0, 4))
 
     def reservationChanged(self):
         # localhost minimal cidr is 8
         targetR = self.comboBoxReservation.currentText()
         targetC = self.comboBoxClass.currentText()
         value = self.spinBoxCidr.value()
-        if targetR == "IETF" and value != 0:
+        if (value != 24) and (targetR == "IETF"):
+            self.spinBoxCidr.setValue(24)
+
+        elif (targetC in ["D", "E"]) and isBadCidrForPrivate(targetC, value)  and (value != 0):
+            self.spinBoxCidr.restricted((0, getMinimalCidrForPrivate(targetC)))
+        elif (targetC == "A") and isBadCidrForPrivate(targetC, value) and (value != 0):
+            self.spinBoxCidr.restricted((0, getMinimalCidrForPrivate(targetC)))
+        elif (targetC == "B"):
+            if (targetR == "Publique") and isBadCidrForPublic(targetC, value) and (value != 0):
+                self.spinBoxCidr.restricted((0, getMinimalCidrForPublic(targetC)))
+            else:
+                if value != 0: self.spinBoxCidr.restricted((0, getMinimalCidrForPrivate(targetC)))
+        elif (targetC == "C"):
+            if (targetR == "Publique") and isBadCidrForPublic(targetC, value) and (value != 0):
+                self.spinBoxCidr.restricted((0, getMinimalCidrForPublic(targetC)))
+            else:
+                if value != 0: self.spinBoxCidr.restricted((0, getMinimalCidrForPrivate(targetC)))
+        elif (targetR == "LocalHost"):
+            self.spinBoxCidr.restricted((0, 8))
+        elif (targetC == "Aléatoire") and (targetR in ["Privée", "Publique"]):
+            self.spinBoxCidr.setValue(0)
+        else:
+            self.spinBoxCidr.restricted((0, 4))
+        """if targetR == "IETF" and value != 0:
             self.spinBoxCidr.setValue(24)
         elif targetC in ["D", "E"] and value < 4 and value != 0:
             self.spinBoxCidr.setValue(4)
@@ -250,34 +271,42 @@ class SelectChallengeAnalyseIp(QDialog):
             self.spinBoxCidr.setValue(12)  # ok
         elif targetR == "Privée" and targetC == "C" and value < 16 and value != 0:
             self.spinBoxCidr.setValue(16)  # ok
+        elif targetR == "LocalHost" and value < 8 and value != 0:
+            self.spinBoxCidr.setValue(8)
 
         elif targetC == "C" and value < 2 and value != 0:
             self.spinBoxCidr.setValue(2)
         elif targetC == "Aléatoire" and targetR in ["Privée", "Publique"]:
             self.spinBoxCidr.setValue(0)
+        self.spinBoxCidr.restricted((0, 4))"""
 
     def cidrChanged(self):
         value = self.spinBoxCidr.value()
         targetR = self.comboBoxReservation.currentText()
         targetC = self.comboBoxClass.currentText()
         if (value != 24) and (targetR == "IETF"):
-            self.spinBoxCidr.setValue(24)  # ok
+            self.spinBoxCidr.setValue(24)
 
-        elif (targetC in ["D", "E"]) and (value < 4) and (value != 0):
-            self.spinBoxCidr.restricted((0, 4))
-        elif (targetC == "A") and (targetR == "Privée") and (value < 8) and (value != 0):
-            self.spinBoxCidr.restricted((0, 8))  # ok
-        elif (targetC == "B") and (value < 12) and (value != 0):
-            self.spinBoxCidr.restricted((0, 12))  # ok
-        elif (targetR == "Privée") and (targetC == "C") and (value < 16) and (value != 0):
-            self.spinBoxCidr.restricted((0, 16))  #ok
-
-        elif (targetC == "C") and (targetR in ["Publique", "Aléatoire"]) and (value != 0):
-            self.spinBoxCidr.restricted((0, 13))
-        elif (targetR == "Multicast") and (value < 4) and (value != 0):
-            self.spinBoxCidr.restricted((0, 4))
+        elif (targetC in ["D", "E"]) and isBadCidrForPrivate(targetC, value)  and (value != 0):
+            self.spinBoxCidr.restricted((0, getMinimalCidrForPrivate(targetC)))
+        elif (targetC == "A") and isBadCidrForPrivate(targetC, value) and (value != 0):
+            self.spinBoxCidr.restricted((0, getMinimalCidrForPrivate(targetC)))
+        elif (targetC == "B"):
+            if (targetR == "Publique") and isBadCidrForPublic(targetC, value) and (value != 0):
+                self.spinBoxCidr.restricted((0, getMinimalCidrForPublic(targetC)))
+            else:
+                if value != 0: self.spinBoxCidr.restricted((0, getMinimalCidrForPrivate(targetC)))
+        elif (targetC == "C"):
+            if (targetR == "Publique") and isBadCidrForPublic(targetC, value) and (value != 0):
+                self.spinBoxCidr.restricted((0, getMinimalCidrForPublic(targetC)))
+            else:
+                if value != 0: self.spinBoxCidr.restricted((0, getMinimalCidrForPrivate(targetC)))
+        elif (targetR == "LocalHost"):
+            self.spinBoxCidr.restricted((0, 8))
         elif (targetC == "Aléatoire") and (targetR in ["Privée", "Publique"]):
             self.spinBoxCidr.setValue(0)
+        else:
+            self.spinBoxCidr.restricted((0, 4))
 
     def setValidated(self):
         self.validated = True

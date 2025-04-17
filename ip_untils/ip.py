@@ -319,13 +319,15 @@ class Reservation:
 
     @property  
     def isBadCidrForPrivate(self):
-        privateCidr, _ = getMinimalCidr(self.classIp)
-        return self.cidr < privateCidr
+        """privateCidr, _ = getMinimalCidr(self.classIp)
+        return self.cidr < privateCidr"""
+        return isBadCidrForPrivate(self.classIp, self.cidr)
     
     @property
     def isBadCidrForPublic(self):
-        _, publicCidr = getMinimalCidr(self.classIp)
-        return self.cidr < publicCidr
+        """_, publicCidr = getMinimalCidr(self.classIp)
+        return self.cidr < publicCidr"""
+        return isBadCidrForPublic(self.classIp, self.cidr)
 
     def _detectReservation(self):
         if self.classIp == "A":  # ok
