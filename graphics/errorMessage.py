@@ -8,7 +8,7 @@ def errSelectCidr(error):
         return error + "#8"
 
 
-def errIp(error):
+def errIpv4(error):
     if "not a valid CIDR" in error:
         return errSelectCidr("base 10")
     elif "base 10" in error:
@@ -21,7 +21,7 @@ def errVlsm(error):
     if "list index out of range" in error:
         return "Des sous réseaux doivent être créés."
     elif "base 10" in error:
-        return errIp("base 10")
+        return errIpv4("base 10")
     elif "avaible" in error:
         requirement, avaible =  error.split("\n")[1].split(",")
         return "La taille du réseau ne permet pas d'acceuillir les sous réseaux.\n" \

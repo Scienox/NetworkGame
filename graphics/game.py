@@ -1,18 +1,18 @@
 from PySide6.QtWidgets import (QLabel, QLineEdit, QPushButton, QDialog, QComboBox, QFormLayout, QSpinBox, QHBoxLayout)
 from PySide6.QtCore import (QThread, Signal, QEventLoop)
 from time import sleep
-from ip_untils.ip_edit import IpEdit
-from ip_untils.helpfunction import *
-from ip_untils.ipManager import IpManager
+from ip_utils.ipv4_edit import Ipv4Edit
+from ip_utils.helpfunction import *
+from ip_utils.ipv4Manager import Ipv4Manager
 from .custom_widget import CustomSpinBoxTimer, CustomQSpinBoxCidr
 
 
-class GameThreadIpAnalyse(QThread):
+class GameThreadIpv4Analyse(QThread):
     validateSignal = Signal(list)
     selectChallSignal = Signal()
     playSignal = Signal()
 
-    def __init__(self, parent, timer:QLabel, randomIp:QLabel,
+    def __init__(self, parent, timer:QLabel, randomIpv4:QLabel,
                  randomCidr:QLabel, buttonValidate:QPushButton, inputs:list):
         super().__init__(parent)
         self._buttonValidate = buttonValidate
@@ -21,12 +21,12 @@ class GameThreadIpAnalyse(QThread):
         self.timer = timer
         self._minutes = 0
         self._secondes = -1
-        self._randomIp = randomIp
+        self._randomIpv4 = randomIpv4
         self._randomCidr = randomCidr
         self._inputs = inputs
         self.selectChallSignal.connect(self.selectChallMessage)
         self._timeOut = (60, 0)
-        self.ipEdit:IpEdit
+        self.ipv4Edit:Ipv4Edit
         self.accept = True
 
     def __bool__(self):
@@ -65,9 +65,9 @@ class GameThreadIpAnalyse(QThread):
         self._isRunning = False
         self._buttonValidate.setEnabled(False)
         [element.setEnabled(False) for element in self._inputs]
-        self._setIpEdit
-        self._setIpEdit == self.ip
-        print(self.ipEdit.show_display)
+        self._setIpv4Edit
+        self._setIpv4Edit == self.ipv4Edit
+        print(self.ipv4Edit.show_display)
 
     def reset(self):
         self._minutes = 0
@@ -119,15 +119,15 @@ class GameThreadIpAnalyse(QThread):
         self.accept = True
         if len(options) != 0:
             klass, reservation, ttype, cidr, time = options
-            self.ip = IpManager(self.translationDetect(klass), self.translationDetect(reservation), self.translationDetect(ttype), cidr).generateRandomIp()
-            self._randomIp.setText(self.ip.ipHost)
-            self._randomCidr.setText("/" + str(self.ip.cidr))
+            self.ipv4 = Ipv4Manager(self.translationDetect(klass), self.translationDetect(reservation), self.translationDetect(ttype), cidr).generateRandomIpv4()
+            self._randomIpv4.setText(self.ipv4.ipHost)
+            self._randomCidr.setText("/" + str(self.ipv4.cidr))
             self.setTimeOut(time)
 
         loop.quit()
 
     def selectChallMessage(self):
-        options = SelectChallengeAnalyseIp(self.parent())
+        options = SelectChallengeAnalyseIpv4(self.parent())
         self.validateSignal.emit(options.choices if options else [])
 
     def validate(self):
@@ -144,17 +144,17 @@ class GameThreadIpAnalyse(QThread):
         return self._minutes, self._secondes
 
     @property
-    def _setIpEdit(self):
+    def _setIpv4Edit(self):
         inputs = self._inputs
-        ipEditList = [self.translationDetect(element.text() if isinstance(element, QLineEdit) else element.currentText()) for element in inputs]
-        ipEdit = IpEdit(
-            *ipEditList
+        ipv4EditList = [self.translationDetect(element.text() if isinstance(element, QLineEdit) else element.currentText()) for element in inputs]
+        ipv4Edit = Ipv4Edit(
+            *ipv4EditList
         )
-        self.ipEdit = ipEdit
-        self.ipEdit == self.ip
+        self.ipv4Edit = ipv4Edit
+        self.ipv4Edit == self.ipv4
 
 
-class SelectChallengeAnalyseIp(QDialog):
+class SelectChallengeAnalyseIpv4(QDialog):
     def __init__(self, window):
         super().__init__(parent=window)
         self.validated = False
@@ -170,7 +170,7 @@ class SelectChallengeAnalyseIp(QDialog):
         self.comboBoxReservation.addItems([random, "Privée", "Publique", "LocalHost", "Multicast", "IETF"])
 
         self.comboBoxType = QComboBox(self)
-        self.comboBoxType.addItems([random, "@Réseau", "@Broadcast", "@Ip"])
+        self.comboBoxType.addItems([random, "@Réseau", "@Broadcast", "@Ipv4"])
 
         self.spinBoxCidr = CustomQSpinBoxCidr(self)
 

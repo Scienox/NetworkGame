@@ -1,0 +1,3 @@
+class IP general
+childclass Ipv4
+childclass Ipv6

@@ -1,6 +1,6 @@
-from ip_untils.ip import IP
-from ip_untils.vlsm import VLSM
-from ip_untils.helpfunction import cidrRequiermentForHost, cidrRequiermentForSubnetMask
+from ip_utils.ipv4 import Ipv4
+from ip_utils.vlsm import VLSM
+from ip_utils.helpfunction import cidrRequiermentForHost, cidrRequiermentForSubnetMask
 from PySide6.QtWidgets import (QTableWidgetItem, QHeaderView, QGridLayout,
                                QSpacerItem, QFileDialog, QMessageBox, QLabel)
 from PySide6.QtCore import Qt
@@ -69,7 +69,7 @@ def __selectChoiceCidr(choiceDelimiter, delimiterNetwork):
         raise ValueError(e)
 
 
-def showIpConfig(ip, choiceDelimiter, delimiterNetwork, table):
+def showIpv4Config(ipv4, choiceDelimiter, delimiterNetwork, table):
     window = table.window()
     error = __Error()
     try:
@@ -79,7 +79,7 @@ def showIpConfig(ip, choiceDelimiter, delimiterNetwork, table):
         errMessage(window, errSelectCidr(str(e)))
     if not error:
         try:
-            IpTmp = IP(ip, cidr)
+            Ipv4Tmp = Ipv4(ipv4, cidr)
 
             methodes = [
                 "type", "classIP", "reservation",
@@ -89,11 +89,11 @@ def showIpConfig(ip, choiceDelimiter, delimiterNetwork, table):
                 ]
             for row in range(0, len(methodes)):
                 methode = methodes[row]
-                targetMethode = getattr(IpTmp, methode)
+                targetMethode = getattr(Ipv4Tmp, methode)
                 element = QTableWidgetItem(str(targetMethode))
                 table.setItem(row, 0, element)
         except Exception as e:
-            errMessage(table.window(), errIp(str(e)))
+            errMessage(table.window(), errIpv4(str(e)))
 
 
 def detectHostPart(adressBinary, cidr):
@@ -111,7 +111,7 @@ def detectHostPart(adressBinary, cidr):
     return netPart, hostPart
 
 
-def showBinaryInfo(ip, choiceDelimiter, delimiterNetwork, table):
+def showBinaryInfo(ipv4, choiceDelimiter, delimiterNetwork, table):
     window = table.window()
     error = __Error()
     try:
@@ -122,7 +122,7 @@ def showBinaryInfo(ip, choiceDelimiter, delimiterNetwork, table):
 
     if not error:
         try:
-            IpTmp = IP(ip, cidr)
+            ipv4Tmp = Ipv4(ipv4, cidr)
 
             rowsMethodes = [
                 "subMask", "network", "ipHost",
@@ -130,8 +130,8 @@ def showBinaryInfo(ip, choiceDelimiter, delimiterNetwork, table):
             ]
             for row in range(0, len(rowsMethodes)):
                 methode = rowsMethodes[row]
-                targetMethode = getattr(IpTmp, methode)
-                targetMethodeB = getattr(IpTmp, methode + "Binary")
+                targetMethode = getattr(ipv4Tmp, methode)
+                targetMethodeB = getattr(ipv4Tmp, methode + "Binary")
                 element = QTableWidgetItem(str(targetMethode))
                 table.setItem(row, 0, element)
                 netPart, hostPart = detectHostPart(targetMethodeB, cidr)
@@ -140,7 +140,7 @@ def showBinaryInfo(ip, choiceDelimiter, delimiterNetwork, table):
                 table.setItem(row, 1, elementNetPart)
                 table.setItem(row, 2, elementHostPart)
         except Exception as e:
-            errMessage(window, errIp(str(e)))
+            errMessage(window, errIpv4(str(e)))
 
 
 def addNetwork(table):
@@ -211,8 +211,8 @@ def makeVlsm(tableNetwork, tableVlsm, subDivisedNetwork, choiceDelimiter, delimi
                 updateRowSizeTable(tableVlsm)
                 for methodeCurrent in range(len(methodes)):
                     methode = methodes[methodeCurrent]
-                    ipInfo = getattr(subnet_work, methode)
-                    newItem = QTableWidgetItem(str(ipInfo))
+                    ipv4Info = getattr(subnet_work, methode)
+                    newItem = QTableWidgetItem(str(ipv4Info))
                     tableVlsm.setItem(rowCurrent, methodeCurrent, newItem)
                 rowCurrent += 1
         except Exception as e:
@@ -461,6 +461,6 @@ def toExport(table, horizontalHeader):
         exportToExcel(table, horizontalHeader)
 
 
-def startIpAnalyse(timer):
+def startIpv4Analyse(timer):
     if not timer:
         timer.start()
