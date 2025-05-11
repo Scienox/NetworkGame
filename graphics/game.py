@@ -66,7 +66,7 @@ class GameThreadIpv4Analyse(QThread):
         self._buttonValidate.setEnabled(False)
         [element.setEnabled(False) for element in self._inputs]
         self._setIpv4Edit
-        self._setIpv4Edit == self.ipv4Edit
+        self.ipv4 == self.ipv4Edit
         print(self.ipv4Edit.show_display)
 
     def reset(self):

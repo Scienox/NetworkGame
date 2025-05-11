@@ -2,7 +2,7 @@ from .ipv4 import Ipv4
 
 
 class Ipv4Edit:
-    def __init__(self, classIpv4, typeIpv4, reservation, ipv4Host, subMask, network, totalHost, firstHost, lastHost, broadcast, nextNetwork):
+    def __init__(self, classIP, typeIp, reservation, ipv4Host, subMask, network, totalHost, firstHost, lastHost, broadcast, nextNetwork):
         self.score_ = 0
         self.feedBack = []
         self.ipHost = ipv4Host
@@ -17,13 +17,13 @@ class Ipv4Edit:
         self.broadcast = broadcast
         self.nextNetwork = nextNetwork
         self.reservation = reservation
-        self.classIpv4 = classIpv4
-        self.typeIpv4 = typeIpv4
+        self.classIP = classIP
+        self.typeIp = typeIp
 
     def __eq__(self, ipv4:Ipv4):
         feedBack = []
         self.score_ = 0
-        if isinstance(Ipv4, Ipv4):
+        if isinstance(ipv4, Ipv4):
             if not self.ifHost(ipv4):
                 feedBack.append(f"- Wrong @Ipv4: {self.ipHost}\n\tCorrect -> {ipv4.ipHost}\n")
             if not self.ifTotalHost(ipv4):
