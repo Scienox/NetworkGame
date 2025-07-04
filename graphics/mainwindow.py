@@ -296,7 +296,7 @@ class MainWindow(QMainWindow):
         self.comboBoxFormType = modelComboBoxForm()
         self.comboBoxFormType.addItems(["", "@réseau", "@broadcast", "@Ipv4"])
         self.comboBoxFormReservation = modelComboBoxForm()
-        self.comboBoxFormReservation.addItems(["", "Privée", "Publique", "LocalHost", "Multicast", "IETF"])
+        self.comboBoxFormReservation.addItems(["", "Privée", "Publique", "LocalHost", "Multicast", "IETF", "APIPA"])
         self.lineEditFormIpv4 = modelLineEditForm()
         self.lineEditFormMask = modelLineEditForm()
         self.lineEditFormNetwork = modelLineEditForm()

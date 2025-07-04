@@ -27,7 +27,7 @@ class GameThreadIpv4Analyse(QThread):
         self.selectChallSignal.connect(self.selectChallMessage)
         self._timeOut = (60, 0)
         self.ipv4Edit:Ipv4Edit
-        self.accept = True
+        self.accept = False
 
     def __bool__(self):
         return self.isRunning
@@ -116,13 +116,17 @@ class GameThreadIpv4Analyse(QThread):
             return element
 
     def generateChallenge(self, loop, options):
-        self.accept = True
+        self.accept = False
         if len(options) != 0:
+            self.accept = True
+            print(options)
             klass, reservation, ttype, cidr, time = options
             self.ipv4 = Ipv4Manager(self.translationDetect(klass), self.translationDetect(reservation), self.translationDetect(ttype), cidr).generateRandomIpv4()
             self._randomIpv4.setText(self.ipv4.ipHost)
             self._randomCidr.setText("/" + str(self.ipv4.cidr))
             self.setTimeOut(time)
+            """debug"""
+            print(self.ipv4)
 
         loop.quit()
 
@@ -320,4 +324,3 @@ class SelectChallengeAnalyseIpv4(QDialog):
         self.accept()
         self.choices = [choiceClass, choiceReservation, choiceType, choiceCidr, choiceTime]
         self.setValidated()
-

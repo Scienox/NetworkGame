@@ -1,3 +1,6 @@
 contrôler si l'analyse ipv4 soit bien sans fail
-ipv4Manager génère des ipv4 valide d'après les normes
+tester si ipv4Manager génère des ipv4 valide d'après les normes
 créé classe Ipv6
+plan d'adressage ipv4 uniquement ou ipv6 intégré ? # vérifier si il existe une cohérence
+    Non aucune pertinance à mélanger les deux formats
+importation et remplacement ou importation et ajout/remplacement

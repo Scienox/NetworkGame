@@ -69,16 +69,7 @@ class Ipv4:
 
     def __contains__(self, otherIp):
         if isinstance(otherIp, Ipv4):
-            return isInThisNetwork(self.networkBinary, self.cidr, otherIp.networkBinary, otherIp.cidr)
-            """otherNetworkBits = otherIp.get_bitsNetwork()
-            selfNetworkBits = self.get_bitsNetwork()
-            if len(otherNetworkBits) < len(selfNetworkBits):
-                return False
-            else:
-                for bit in range(len(selfNetworkBits)):
-                    if selfNetworkBits[bit] != otherNetworkBits[bit]:
-                        return False
-                return True   """         
+            return isInThisNetwork(self.networkBinary, self.cidr, otherIp.networkBinary, otherIp.cidr)      
         else:
             return NotImplemented
 
@@ -347,8 +338,11 @@ class Reservation:
                 if self.isBadCidrForPrivate:
                     return "mixed"
                 return "private"
-            if self.isBadCidrForPublic:
+            if self.isBadCidrForPublic or (isInThisNetwork(convertDecimalToBinary(self.networkIp), self.cidr, convertDecimalToBinary([169, 254, 0 ,0]), 16)
+                                           and not self.networkIp == [169, 254, 0 ,0]):
                 return "mixed"
+            if self.networkIp == [169, 254, 0, 0]:
+                return "APIPA"
             return "public"
         
         elif self.classIp == "C":
