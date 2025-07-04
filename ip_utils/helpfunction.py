@@ -164,7 +164,7 @@ def excludeIETF(vectorDecimal, cidr, choice):
 def isInThisNetwork(networkRef, cidrRef, networkFocus, cidrFocus):
     bitsRef = get_bitsNetwork(networkRef, cidrRef)
     bitsFocus = get_bitsNetwork(networkFocus, cidrFocus)
-    if len(bitsRef) < len(bitsFocus):
+    if len(bitsRef) <= len(bitsFocus):
         for bit in range(len(bitsRef)):
             if bitsRef[bit] != bitsFocus[bit]:
                 return False
